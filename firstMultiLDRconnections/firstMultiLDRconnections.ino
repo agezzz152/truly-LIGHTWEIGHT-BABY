@@ -1,41 +1,35 @@
 #include <Adafruit_NeoPixel.h>
 
-#define PIN 5 // Define the pin you're using to control the Neopixels
-#define NUM_PIXELS    32  // Define the number of Neopixels in your strip
-#define Delay 200
-
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
+#define PIN 5
+#define LEDNUM 32
+#define delayval 50
+#define photores 34
+Adafruit_NeoPixel pixels(LEDNUM, PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-  strip.begin();
-  strip.show();  // Initialize all pixels to 'off'
-  strip.setBrightness(100);
-  // Set all Neopixels to red
-  colorWipe(strip.Color(30, 0, 0), 50);  // Red color with a 50ms delay
-
+  pixels.setBrightness(100);
+  pixels.begin();
+  Serial.begin(115200);
+  pixels.setBrightness(150);
+  delay(200);
 }
 
 void loop() {
-  //Disco();
-  colorWipe(strip.Color(30, 0, 0), 50);
+  LightUp();
+  int reading = analogRead(photores);
+  Serial.println(reading);
+  delay(delayval);
 }
 
-// Fill the dots one after the other with a color
-void colorWipe(uint32_t color, int wait) {
-  for(int i = 0; i < strip.numPixels(); i++) {
-    strip.setPixelColor(i, color);
-    strip.show();
-    delay(wait);
-  }
-}
-  void Disco(){
-    for (int i = 0; i < strip.numPixels(); i++) {
-      strip.setPixelColor(i, (50,0,0));
-      strip.setPixelColor(i-1, (0, 50, 0));
-      strip.setPixelColor(i-2, (0, 0, 50));
 
-
-      strip.show();
-      delay(Delay);
+void LightUp() {
+  for (int j = 0; j < LEDNUM; j++){
+    pixels.setPixelColor(j, pixels.Color(0,0,30));
     }
-  }
+    pixels.show();
+}
+
+void LightOff() { 
+  pixels.clear();
+  pixels.show();
+}
