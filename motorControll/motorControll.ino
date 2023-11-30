@@ -24,14 +24,6 @@ void setup() {
   digitalWrite(3,LOW);
 }
 
-void loop() {
-  //For Clock wise motion , in_1 = High , in_2 = Low
-  moov(0, 150, 0);
-  delay(100);
-
-}
-
-
 void moov(double angle, double sped, double speen){ //angle in a number betwin 0 and 2pi, sped in a number betwin 0 and 255, and speen is a number betwin 0 and 255
   int i;
   
@@ -82,3 +74,10 @@ double signOFx(double x){
   return x / abs(x);
 }
 
+
+void loop() {
+  //For Clock wise motion , in_1 = High , in_2 = Low
+  moov(0, 150, 0);
+  delay(100);
+
+}
