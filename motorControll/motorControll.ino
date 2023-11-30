@@ -1,3 +1,10 @@
+#include <Adafruit_NeoPixel.h>
+
+//neopixel7
+#define PIN 5          // Define the pin you're using to control the Neopixels
+#define NUM_PIXELS 32  // Define the number of Neopixels in your strip
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
 const int pwm[] = {9, 12, 11, 10};   //right up and clockwise
 const int in_1[] = {30, 37, 35, 32};
 const int in_2[] = {31, 36, 34, 33};
@@ -20,6 +27,11 @@ void setup() {
     pinMode(in_2[i], OUTPUT);
   }
 
+  strip.begin();
+  strip.show();  // Initialize all pixels to 'off'
+  strip.setBrightness(100);
+
+
   digitalWrite(2,LOW);
   digitalWrite(3,LOW);
 }
@@ -29,6 +41,8 @@ void moov(double angle, double sped, double speen){ //angle in a number betwin 0
   int i;
   //turning the angle from degrees to rad
   angle = angle /(180) * (3.141592653589793);
+
+  //if inputed for the robot to stop
   if (!(sped == 0) || !(speen == 0)){
    
     for (i = 0 ; i < 4; i++) {
@@ -40,8 +54,7 @@ void moov(double angle, double sped, double speen){ //angle in a number betwin 0
 
     /* adding the reguler forward, beckward, left, right movment
     the first one is equal to 60 degrees in rads
-    the second is 45 degrees in rads
-    */
+    the second is 45 degrees in rads */
     sixtyrad = 1.0472;
     fortfiverad = 0.785398;
     motors[0] = -sin(fortfiverad - angle) * sped * speedPart; //right front 
@@ -75,10 +88,19 @@ double signOFx(double x){
   return x / abs(x);
 }
 
+void colorWipe(uint32_t color) {
+  for (int i = 0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, color);
+    strip.show();
+  }
+}
+
 
 void loop() {
-  //For Clock wise motion , in_1 = High , in_2 = Low
+  //turnes the entire neopixel strip to the color red with brightness of 50
+  colorWipe(strip.color(40,0,0),50);
+
   moov(180, 150, 0);
-  delay(100);
+  delay(10);
 
 }
