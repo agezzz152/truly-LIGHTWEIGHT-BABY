@@ -1,23 +1,37 @@
 #include <Adafruit_NeoPixel.h>
 
 #define PIN 5          // Define the pin you're using to control the Neopixels
-#define NUM_PIXELS 48  // Define the number of Neopixels in your strip
-
+#define NUM_PIXELS 8*7  // Define the number of Neopixels in your strip
 #define NUM_LDR 6
 
-int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise
+// int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp connections
+int const LDR[] = { A2, A3, A4, A5, A6, A7};  //from the rightest LDR clockwise, with arduino connections
 float LDRval[NUM_LDR];
+int LDRLastVal[NUM_LDR][3] = {{0}};
 
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   strip.begin();
   strip.show();  // Initialize all pixels to 'off'
   strip.setBrightness(100);
+}
+
+void loop() {
+  colorWipe(strip.Color(30, 0, 0), 50);
+  for (int i = 0; i < NUM_LDR; i++) {
+    LDRval[i] = LDRcheck(LDR[i]);
+    Serial.print(LDRval[i]);
+    Serial.print(" - ");
+  }
+  int z = whichLDR(LDRval, NUM_LDR);
+  Serial.print("| ");
+  Serial.print(z);
+  Serial.println(" |");
 }
 
 int signOFx(int x) {
@@ -33,7 +47,7 @@ int LDRcheck(int conn) {
 
 int whichLDR(float vals[], int n) {
   for (int i = 0; i < n; i++) {
-    if (vals[i] > 500)
+    if (vals[i] > 250)
       return i;
   }
 
@@ -49,15 +63,3 @@ void colorWipe(uint32_t color, int wait) {
 }
 
 
-void loop() {
-  colorWipe(strip.Color(30, 0, 0), 50);
-  for (int i = 0; i < NUM_LDR; i++) {
-    LDRval[i] = LDRcheck(LDR[i]);
-    Serial.print(LDRval[i]);
-    Serial.print(" - ");
-  }
-  int z = whichLDR(LDRval, NUM_LDR);
-  Serial.print("| ");
-  Serial.print(z);
-  Serial.println(" |");
-}
