@@ -1,9 +1,12 @@
 #include <Adafruit_NeoPixel.h>
 
-//neopixel7
 #define PIN 5          // Define the pin you're using to control the Neopixels
-#define NUM_PIXELS 32  // Define the number of Neopixels in your strip
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
+#define NUM_PIXELS 48  // Define the number of Neopixels in your strip
+
+#define NUM_LDR 6
+
+int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise
+float LDRval[NUM_LDR];
 
 const int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
 const int in_1[] = { 30, 37, 35, 32 };
@@ -16,27 +19,37 @@ double speenPart;
 double sixtyrad;
 double fortfiverad;
 
-//For providing logic to L298 IC to choose the direction of the DC motor
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
+
 
 void setup() {
-
-  Serial.begin(9600);
+  Serial.begin(115200);
   for (int i = 0; i < NUM_MOTORS; i++) {
     pinMode(pwm[i], OUTPUT);   //we have to set PWM pin as output
     pinMode(in_1[i], OUTPUT);  //Logic pins are also set as output
     pinMode(in_2[i], OUTPUT);
   }
-
+  digitalWrite(2, LOW);
+  digitalWrite(3, LOW);
   strip.begin();
   strip.show();  // Initialize all pixels to 'off'
   strip.setBrightness(100);
-
-
-  digitalWrite(2, LOW);
-  digitalWrite(3, LOW);
 }
 
-
+void loop() {
+  colorWipe(strip.Color(30, 0, 0), 50);
+  for (int i = 0; i < NUM_LDR; i++) {
+    LDRval[i] = LDRcheck(LDR[i]);
+    Serial.print(LDRval[i]);
+    Serial.print(" - ");
+  }
+  int z = whichLDR(LDRval, NUM_LDR);
+  Serial.print("| ");
+  Serial.print(z);
+  Serial.println(" |");
+  moov(180, 150, 0);
+  delay(10);
+}
 
 void moov(double angle, double sped, double speen) {  //angle in a number betwin 0 and 2pi, sped in a number betwin 0 and 255, and speen is a number betwin 0 and 255
   int i;
@@ -88,11 +101,29 @@ void moov(double angle, double sped, double speen) {  //angle in a number betwin
   }
 }
 
-double signOFx(double x) {
+
+int signOFx(int x) {
   return x / abs(x);
 }
 
-void colorWipe(uint32_t color) {
+
+
+int LDRcheck(int conn) {
+  int a = analogRead(conn);
+  return a;
+}
+
+int whichLDR(float vals[], int n) {
+  for (int i = 0; i < n; i++) {
+    if (vals[i] > 500)
+      return i;
+  }
+
+  return -1;
+}
+
+// Fill the dots one after the other with a color
+void colorWipe(uint32_t color, int wait) {
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, color);
     strip.show();
@@ -100,10 +131,3 @@ void colorWipe(uint32_t color) {
 }
 
 
-void loop() {
-  //turnes the entire neopixel strip to the color red
-  colorWipe(strip.Color(40, 0, 0));
-
-  moov(180, 150, 0);
-  delay(10);
-}
