@@ -1,3 +1,8 @@
+// When we started to work on this code, only us and god understood it.
+// Now, only god understands it.
+// In order to warn others from this code, please update the counter accordingly:
+// Hours watsted on stupid mistakes ( = aka this code): 10 
+
 #include <Adafruit_NeoPixel.h>
 
 #define PIN 5          // Define the pin you're using to control the Neopixels
