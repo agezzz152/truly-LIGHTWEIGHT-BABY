@@ -10,7 +10,8 @@
 
 #define NUM_LDR 6
 
-int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise
+// int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp connections
+int const LDR[] = { A7, A6, A5, A4, A3, A2 };  //from the leftest LDR Counter-Clockwise, with arduino connections
 float LDRval[NUM_LDR];
 
 const int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
@@ -28,7 +29,9 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ80
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
+
+  //motors:
   for (int i = 0; i < NUM_MOTORS; i++) {
     pinMode(pwm[i], OUTPUT);   //we have to set PWM pin as output
     pinMode(in_1[i], OUTPUT);  //Logic pins are also set as output
@@ -36,12 +39,22 @@ void setup() {
   }
   digitalWrite(2, LOW);
   digitalWrite(3, LOW);
+
+  //neoPixel:
   strip.begin();
   strip.show();  // Initialize all pixels to 'off'
   strip.setBrightness(100);
+
+  //Led for control
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
+
 void loop() {
+  //turning the ldr off most of the time
+  digitalWrite(LED_BUILTIN, 0);
+
+
   colorWipe(strip.Color(30, 0, 0), 50);
   for (int i = 0; i < NUM_LDR; i++) {
     LDRval[i] = LDRcheck(LDR[i]);
@@ -52,8 +65,16 @@ void loop() {
   Serial.print("| ");
   Serial.print(z);
   Serial.println(" |");
-  moov(180, 150, 0);
-  delay(10);
+
+  if (z != -1)
+    for (int i = z*8; i < 8*z + 8; i++){
+      strip.setPixelColor(i, 100, 30, 0);
+    }
+
+  strip.show();
+
+  moov(0, 100, 0);
+  delay(5);
 }
 
 void moov(double angle, double sped, double speen) {  //angle in a number betwin 0 and 2pi, sped in a number betwin 0 and 255, and speen is a number betwin 0 and 255
@@ -118,9 +139,10 @@ int LDRcheck(int conn) {
   return a;
 }
 
+
 int whichLDR(float vals[], int n) {
   for (int i = 0; i < n; i++) {
-    if (vals[i] > 500)
+    if (vals[i] > 250)
       return i;
   }
 
@@ -131,8 +153,5 @@ int whichLDR(float vals[], int n) {
 void colorWipe(uint32_t color, int wait) {
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, color);
-    strip.show();
   }
 }
-
-
