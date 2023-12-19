@@ -7,24 +7,25 @@ void setup() {
  pinMode(in1 , OUTPUT);
  pinMode(in2 , OUTPUT);
  pinMode(pwm, OUTPUT);
- digitalWrite(in1, 0);
- digitalWrite(in2, 0);
  analogWrite(pwm, 0);
  digitalWrite(40 , HIGH);
 }
 
-void loop() {
-  Dribbleron(HIGH);
-  delay(2000);
-}
 
-void Dribbleron(bool state) {
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
+void Drip(bool direc, bool state = HIGH) {
+  digitalWrite(in1, direc);
+  digitalWrite(in2, !direc);
   if (state) {
     analogWrite(pwm, dribblerPower);
   }
   else {
     analogWrite(pwm, 0);
   }
+}
+
+
+
+void loop() {
+  Drip(HIGH);
+  delay(2000);
 }
