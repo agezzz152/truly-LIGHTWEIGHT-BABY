@@ -1,18 +1,19 @@
 // When we started to work on this code, only us and god understood it.
 // Now, only god understands it.
 // In order to warn others from this code, please update the counter accordingly:
-// Hours watsted on stupid mistakes ( = aka this code): 10
+// Hours watsted on stupid mistakes ( = aka this code): 13
 
 #include <Adafruit_NeoPixel.h>
 
 #define PIN 5          // Define the pin you're using to control the Neopixels
 #define NUM_PIXELS 48  // Define the number of Neopixels in your strip
-
+#define ANGLE_BETWEEN_LDR
 #define NUM_LDR 6
 
 // int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp
-int const LDR[] = { A7, A6, A5, A4, A3, A2 };  //from the leftest LDR Counter-Clockwise, with arduino ldrPinections
+int const LDR[NUM_LDR] = { A7, A6, A5, A4, A3, A2 };  //from the leftest LDR Counter-Clockwise, with arduino ldr Pinections
 int LDRval[NUM_LDR];
+int onWhiteLine;
 
 const int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
 const int in_1[] = { 30, 37, 35, 32 };
@@ -25,7 +26,7 @@ double speenPart;
 double sixtyrad;
 double fortfiverad;
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + onWhiteLine800);
 
 
 void setup() {
@@ -42,7 +43,7 @@ void setup() {
 
   //neoPixel:
   strip.begin();
-  strip.show();  // Initialize all pixels to 'off'
+  strip.show();  // onWhiteLinee all pixels to 'off'
   strip.setBrightness(100);
 
   //Led for control
@@ -56,21 +57,29 @@ void loop() {
 
 
 
-  colorWipe(strip.Color(30, 0, 0), 50);
+  colorWipe(strip.Color(30, 0, 0));
 
-  int z = ldrRutine();
+  onWhiteLine = ldrRutine();
 
-  if (z != -1) {
-    strip.setPixelColor(z * 8, 50, 0, 50);
-    strip.setPixelColor(z * 8 + 7, 50, 0, 50);
-    // for (int i = z*8; i < 8*z + 8; i++){
+  if (onWhiteLine != -1) {
+    if (onWhiteLine > 2) {
+      moov(LdrAngle(onWhiteLine) - 90, 50, 0);
+    } else{
+      moov(LdrAngle(onWhiteLine) + 90, 50, 0);
+    }
+
+    strip.setPixelColor(onWhiteLine * 8, 100, 0, 50);
+    strip.setPixelColor(onWhiteLine * 8 + 7, 100, 0, 50);
+    // for (int i = onWhiteLine*8; i < 8*onWhiteLine + 8; i++){
     //   strip.setPixelColor(i, 100, 0, 0);
     // }
+  } else {
+    moov(0, 50, 0);
   }
 
   strip.show();
 
-  moov(0, 50, 0);
+
   delay(5);
 }
 
@@ -138,8 +147,7 @@ int signOFx(int x) {
 }
 
 //LDR FUNCTIONS:
-/*ex:  printing the ldr values, and also Prints the index of the ldr on white line. if none detected - prints -1
-  in: none
+/*ex:  printing the ldr values, and also Prints the index of the ldr on white line. if none detected prints -1.
   out: returns the index of the ldr that's detecting a white line */
 int ldrRutine() {
   for (int i = 0; i < NUM_LDR; i++) {
@@ -147,18 +155,23 @@ int ldrRutine() {
     Serial.print(LDRval[i]);
     Serial.print(" - ");
   }
-  int z = whichLDR(LDRval, NUM_LDR);
+  int onWhiteLine = whichLDR(LDRval, NUM_LDR);
   Serial.print("| ");
-  Serial.print(z);
+  Serial.print(onWhiteLine);
   Serial.println(" |");
 
-  return z;
+  return onWhiteLine;
 }
 
 //gets an ldr pin, and returns the value the ldr is measuring
 int LDRcheck(int ldrPin) {
   int a = analogRead(ldrPin);
   return a;
+}
+
+//returns which angle the inputed ldr is at (when zero degrees are set to the dribler)
+float LdrAngle(int iLDR) {
+  return 70 + iLDR * ANGLE_BETWEEN_LDR;
 }
 
 
@@ -177,7 +190,7 @@ int whichLDR(int vals[], int n) {
 
 
 // Fill the dots one after the other with a color
-void colorWipe(uint32_t color, int wait) {
+void colorWipe(uint32_t color) {
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, color);
   }
