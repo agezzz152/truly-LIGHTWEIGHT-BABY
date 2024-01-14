@@ -7,6 +7,8 @@
 // int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp connections
 int const LDR[] = { A2, A3, A4, A5, A6, A7};  //from the rightest LDR clockwise, with arduino connections
 float LDRval[NUM_LDR];
+float LDRavg[NUM_LDR];
+bool LDRActive[6] = {0};
 int LDRLastVal[NUM_LDR][3] = {{0}};
 
 
@@ -23,15 +25,9 @@ void setup() {
 
 void loop() {
   colorWipe(strip.Color(30, 0, 0), 50);
-  for (int i = 0; i < NUM_LDR; i++) {
-    LDRval[i] = LDRcheck(LDR[i]);
-    Serial.print(LDRval[i]);
-    Serial.print(" - ");
-  }
-  int z = whichLDR(LDRval, NUM_LDR);
-  Serial.print("| ");
-  Serial.print(z);
-  Serial.println(" |");
+  whichLDR(LDRval);
+  displayVals();
+  
 }
 
 int signOFx(int x) {
@@ -45,13 +41,66 @@ int LDRcheck(int conn) {
   return a;
 }
 
-int whichLDR(float vals[], int n) {
-  for (int i = 0; i < n; i++) {
-    if (vals[i] > 250)
-      return i;
+
+void whichLDR(float* vals) {
+
+  for (int i = 0; i < NUM_LDR; i++) {
+    if (vals[i] < 800) {
+      LDRActive[i] = 1;
+    }
+    else {
+      LDRActive[i] = 0;
+    }
+  }
+}
+
+
+double LdrAngle() {
+  int sumAng = 0;
+  int NActiveLDR = 0;
+  for (int i = 0; i <  NUM_LDR; i++) {
+    if (LDRActive[i]) {
+      sumAng += 70 + i * 45;
+      NActiveLDR++;
+    }
+  }
+  if (NActiveLDR > 0) {
+    return (sumAng / NActiveLDR);
+  }
+  else {
+    return -1;
+  }
+}
+
+
+void displayVals() {
+  int i;
+  for (i = 0; i < NUM_LDR; i++) {
+    LDRval[i] = LDRcheck(LDR[i]);
+    Serial.print(LDRval[i]);
+    Serial.print(" - ");
+  }
+  Serial.print("| ");
+  for (i = 0; i < NUM_LDR; i++) {
+    if (LDRActive[i]) {
+      Serial.print(i);
+      Serial.print(", ");
+    }
+  }
+  Serial.print(", ");
+  Serial.print(LdrAngle());
+  Serial.println(" |");
+
+
+
+  for (i = 0; i < NUM_LDR; i++) {
+    if (LDRActive[i]) {
+      strip.setPixelColor(i * 8, 100, 0, 50);
+      strip.setPixelColor(i * 8 + 7, 100, 0, 50);
+    }
   }
 
-  return -1;
+
 }
 
 // Fill the dots one after the other with a color
