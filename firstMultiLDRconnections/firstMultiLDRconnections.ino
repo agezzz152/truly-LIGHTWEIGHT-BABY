@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #define PIN 5          // Define the pin you're using to control the Neopixels
-#define NUM_PIXELS 8*7  // Define the number of Neopixels in your strip
+#define NUM_PIXELS 48  // Define the number of Neopixels in your strip
 #define NUM_LDR 6
 
 // int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp connections
@@ -28,6 +28,8 @@ void loop() {
   whichLDR(LDRval);
   displayVals();
   
+
+  strip.show();
 }
 
 int signOFx(int x) {
@@ -107,7 +109,6 @@ void displayVals() {
 void colorWipe(uint32_t color, int wait) {
   for (int i = 0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, color);
-    strip.show();
   }
 }
 
