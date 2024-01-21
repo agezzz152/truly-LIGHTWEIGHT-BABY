@@ -1,23 +1,32 @@
 // When we started to work on this code, only us and god understood it.
 // Now, only god understands it.
 // In order to warn others from this code, please update the counter accordingly:
-// Hours watsted on stupid mistakes ( = aka this code): 10 
+// Hours watsted on stupid mistakes ( = aka this code): 13
 
 #include <Adafruit_NeoPixel.h>
+long int t1;
+long int currentT;
 
 #define PIN 5          // Define the pin you're using to control the Neopixels
 #define NUM_PIXELS 48  // Define the number of Neopixels in your strip
-
+#define ANGLE_BETWEEN_LDR 45
 #define NUM_LDR 6
+#define RETREAT_DELAY 50
 
-// int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp connections
-int const LDR[] = { A7, A6, A5, A4, A3, A2 };  //from the leftest LDR Counter-Clockwise, with arduino connections
+// int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp
+int const LDR[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
 float LDRval[NUM_LDR];
+float LDRavg[NUM_LDR];
+bool LDRActive[6] = { 0 };
+bool isRetreating = 0;
+double lAng = 0;
 
 const int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
 const int in_1[] = { 30, 37, 35, 32 };
 const int in_2[] = { 31, 36, 34, 33 };
 #define NUM_MOTORS 4
+
+double ang, liniarSped, spinSped;
 
 double motors[4] = { 0 };
 double speedPart;
@@ -26,7 +35,6 @@ double sixtyrad;
 double fortfiverad;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
-
 
 void setup() {
   Serial.begin(9600);
@@ -42,7 +50,7 @@ void setup() {
 
   //neoPixel:
   strip.begin();
-  strip.show();  // Initialize all pixels to 'off'
+  strip.show();  // onWhiteLinee all pixels to 'off'
   strip.setBrightness(100);
 
   //Led for control
@@ -51,33 +59,34 @@ void setup() {
 
 
 void loop() {
-  //turning the ldr off most of the time
-  digitalWrite(LED_BUILTIN, 0);
-
+  ang = 0;
+  liniarSped = 75;
+  spinSped = 0;
 
   colorWipe(strip.Color(30, 0, 0), 50);
-  for (int i = 0; i < NUM_LDR; i++) {
-    LDRval[i] = LDRcheck(LDR[i]);
-    Serial.print(LDRval[i]);
-    Serial.print(" - ");
+  if (!isRetreating) {
+    LdrAngle();
+    whichLDR(LDRval);
+    moov(ang, liniarSped, spinSped);
   }
-  int z = whichLDR(LDRval, NUM_LDR);
-  Serial.print("| ");
-  Serial.print(z);
-  Serial.println(" |");
 
-  if (z != -1)
-    for (int i = z*8; i < 8*z + 8; i++){
-      strip.setPixelColor(i, 100, 30, 0);
-    }
+  handleRetreat();
 
+
+
+  displayVals();
   strip.show();
-
-  moov(0, 100, 0);
-  delay(5);
 }
 
-void moov(double angle, double sped, double speen) {  //angle in a number betwin 0 and 2pi, sped in a number betwin 0 and 255, and speen is a number betwin 0 and 255
+
+
+//MOVE FUNCTIONS:
+/* function moves the robot in a certien angle. 
+angle = angle between dribler and chosen angle of movement,
+sped = linear speed,
+speen = circular speed. */
+void moov(double angle, const double& sped, const double& speen) {
+  //angle in a number betwin 0 and 2pi, sped in a number betwin 0 and 255, and speen is a number betwin 0 and 255
   int i;
   //turning the angle from degrees to rad
   angle = angle / (180) * (3.141592653589793);
@@ -128,26 +137,101 @@ void moov(double angle, double sped, double speen) {  //angle in a number betwin
 }
 
 
-int signOFx(int x) {
-  return x / abs(x);
+
+void handleRetreat() {
+  currentT = millis();
+
+  // Check if it's time to stop retreating
+  if (isRetreating && (currentT > t1 + RETREAT_DELAY)) {
+    isRetreating = false;
+  }
+
+  // Check if retreat mode is active
+  if (isRetreating) {
+    moov(ang + 180, 2 * liniarSped, spinSped);
+  }
 }
 
 
+//returns whether x is positive or negative. returns 1 when positive and -1 when negative
+int signOFx(const int& x) {
+  return x / abs(x);
+}
 
-int LDRcheck(int conn) {
-  int a = analogRead(conn);
+//LDR FUNCTIONS:
+/*ex:  printing the ldr values, and also Prints the index of the ldr on white line. if none detected prints -1.
+  out: returns the index of the ldr that's detecting a white line */
+
+//gets an ldr pin, and returns the value the ldr is measuring
+int LDRcheck(const int& ldrPin) {
+  int a = analogRead(ldrPin);
   return a;
 }
 
 
-int whichLDR(float vals[], int n) {
-  for (int i = 0; i < n; i++) {
-    if (vals[i] > 250)
-      return i;
-  }
 
-  return -1;
+/*explanation: finds which ldr on a white line.
+  inputs: vals = array all the ldr measured values, n = number of LDRs.
+  outputs: returns the first ldr which returns a higher than 250 val */
+void whichLDR(float* vals) {
+
+  for (int i = 0; i < NUM_LDR; i++) {
+    if (vals[i] < 800) {
+      LDRActive[i] = 1;
+    } else {
+      LDRActive[i] = 0;
+    }
+  }
 }
+
+//returns which angle the inputed ldr is at (when zero degrees are set to the dribler)
+void LdrAngle() {
+  int sumAng = 0;
+  int NActiveLDR = 0;
+  for (int i = 0; i < NUM_LDR; i++) {
+    if (LDRActive[i]) {
+      sumAng += 70 + i * 45;
+      NActiveLDR++;
+    }
+  }
+  if (NActiveLDR > 0) {
+    t1 = millis();
+    isRetreating = 1;
+    lAng = (sumAng / NActiveLDR);
+  } else {
+    lAng = -1;
+  }
+}
+
+
+void displayVals() {
+  int i;
+  for (i = 0; i < NUM_LDR; i++) {
+    LDRval[i] = LDRcheck(LDR[i]);
+    Serial.print(LDRval[i]);
+    Serial.print(" - ");
+  }
+  Serial.print("| ");
+  for (i = 0; i < NUM_LDR; i++) {
+    if (LDRActive[i]) {
+      Serial.print(i);
+      Serial.print(", ");
+    }
+  }
+  Serial.print(", ");
+  Serial.print(lAng);
+  Serial.println(" |");
+
+
+
+  for (i = 0; i < NUM_LDR; i++) {
+    if (LDRActive[i]) {
+      strip.setPixelColor(i * 8, 100, 0, 50);
+      strip.setPixelColor(i * 8 + 7, 100, 0, 50);
+    }
+  }
+}
+
 
 // Fill the dots one after the other with a color
 void colorWipe(uint32_t color, int wait) {
