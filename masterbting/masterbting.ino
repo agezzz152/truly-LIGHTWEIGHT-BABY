@@ -5,12 +5,13 @@
 
 #include <Adafruit_NeoPixel.h>
 long int t1;
-long int t2;
+long int currentT;
 
 #define PIN 5          // Define the pin you're using to control the Neopixels
 #define NUM_PIXELS 48  // Define the number of Neopixels in your strip
 #define ANGLE_BETWEEN_LDR 45
 #define NUM_LDR 6
+#define RETREAT_DELAY 50
 
 // int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp
 int const LDR[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
@@ -18,6 +19,7 @@ float LDRval[NUM_LDR];
 float LDRavg[NUM_LDR];
 bool LDRActive[6] = { 0 };
 bool isRetreating = 0;
+double lAng = 0;
 
 const int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
 const int in_1[] = { 30, 37, 35, 32 };
@@ -62,40 +64,19 @@ void loop() {
   spinSped = 0;
 
   colorWipe(strip.Color(30, 0, 0), 50);
-  whichLDR(LDRval);
+  if (!isRetreating) {
+    LdrAngle();
+    whichLDR(LDRval);
+    moov(ang, liniarSped, spinSped);
+  }
+
+  handleRetreat();
+
+
+
   displayVals();
-
-  moov(ang, liniarSped, spinSped);
-
   strip.show();
 }
-
-// void loop() {
-//   ang = 0;
-//   liniarSped = 75;
-//   spinSped = 0;
-
-//   if (!isRetreating){
-    
-//   }
-//   double lAng = LdrAngle();
-//   colorWipe(strip.Color(30, 0, 0), 50);
-//   whichLDR(LDRval);
-//   displayVals();
-//   if (lAng != -1){
-//     t1 = millis();
-//     t2 = 0; 
-//     while(t2 < t1 + 300){
-//       t2 = millis();
-//       moov(lAng - 180, 50 + liniarSped, spinSped);
-//     }
-//   }
-//   else{
-//     moov(ang, liniarSped, spinSped);
-//   }
-
-//   strip.show();
-// }
 
 
 
@@ -157,6 +138,21 @@ void moov(double angle, const double& sped, const double& speen) {
 
 
 
+void handleRetreat() {
+  currentT = millis();
+
+  // Check if it's time to stop retreating
+  if (isRetreating && (currentT > t1 + RETREAT_DELAY)) {
+    isRetreating = false;
+  }
+
+  // Check if retreat mode is active
+  if (isRetreating) {
+    moov(ang + 180, 2 * liniarSped, spinSped);
+  }
+}
+
+
 //returns whether x is positive or negative. returns 1 when positive and -1 when negative
 int signOFx(const int& x) {
   return x / abs(x);
@@ -181,7 +177,6 @@ void whichLDR(float* vals) {
 
   for (int i = 0; i < NUM_LDR; i++) {
     if (vals[i] < 800) {
-      isRetreating = 1;
       LDRActive[i] = 1;
     } else {
       LDRActive[i] = 0;
@@ -190,7 +185,7 @@ void whichLDR(float* vals) {
 }
 
 //returns which angle the inputed ldr is at (when zero degrees are set to the dribler)
-double LdrAngle() {
+void LdrAngle() {
   int sumAng = 0;
   int NActiveLDR = 0;
   for (int i = 0; i < NUM_LDR; i++) {
@@ -200,9 +195,11 @@ double LdrAngle() {
     }
   }
   if (NActiveLDR > 0) {
-    return (sumAng / NActiveLDR);
+    t1 = millis();
+    isRetreating = 1;
+    lAng = (sumAng / NActiveLDR);
   } else {
-    return -1;
+    lAng = -1;
   }
 }
 
@@ -222,7 +219,7 @@ void displayVals() {
     }
   }
   Serial.print(", ");
-  Serial.print(LdrAngle());
+  Serial.print(lAng);
   Serial.println(" |");
 
 
