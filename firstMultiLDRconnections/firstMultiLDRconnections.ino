@@ -9,7 +9,6 @@ int const LDR[] = { A2, A3, A4, A5, A6, A7};  //from the rightest LDR clockwise,
 float LDRval[NUM_LDR];
 float LDRavg[NUM_LDR];
 bool LDRActive[6] = {0};
-int LDRLastVal[NUM_LDR][3] = {{0}};
 
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
@@ -25,10 +24,11 @@ void setup() {
 
 void loop() {
   colorWipe(strip.Color(30, 0, 0), 50);
+  //detects which ldrs are activated and detect someting bellow them. 
   whichLDR(LDRval);
+  //prints ldr vals, the angle detected and the activated ldrs. also lights up neopixel near activaed ldr in purple
   displayVals();
-  
-
+  //update the neopixel strip
   strip.show();
 }
 
@@ -45,9 +45,9 @@ int LDRcheck(int conn) {
 
 
 void whichLDR(float* vals) {
-
   for (int i = 0; i < NUM_LDR; i++) {
     if (vals[i] < 800) {
+      //update the global "which ldr is active" array index to 1 (cause the ldr is indeed activated)
       LDRActive[i] = 1;
     }
     else {
@@ -62,14 +62,17 @@ double LdrAngle() {
   int NActiveLDR = 0;
   for (int i = 0; i <  NUM_LDR; i++) {
     if (LDRActive[i]) {
+      //for each activated ldt, add the of it to the sum of angles. 
       sumAng += 70 + i * 45;
       NActiveLDR++;
     }
   }
   if (NActiveLDR > 0) {
+    //make an average angle for all the ldr detecting a white line
     return (sumAng / NActiveLDR);
   }
   else {
+    //if not detected a line, return -1.
     return -1;
   }
 }
@@ -93,8 +96,7 @@ void displayVals() {
   Serial.print(LdrAngle());
   Serial.println(" |");
 
-
-
+  //when an ldr is activated, change the first and last led in the closest neopixel strip to it.
   for (i = 0; i < NUM_LDR; i++) {
     if (LDRActive[i]) {
       strip.setPixelColor(i * 8, 100, 0, 50);

@@ -64,15 +64,17 @@ void loop() {
   spinSped = 0;
 
   colorWipe(strip.Color(30, 0, 0), 50);
+  // if not during the proccess of retreating from a white line
   if (!isRetreating) {
-    LdrAngle();
+    //finds out which ldrs are active
     whichLDR(LDRval);
+    //calc the angle of the ldrs detected and store in global variable
+    LdrAngle();
     moov(ang, liniarSped, spinSped);
   }
 
+  //function for checking 
   handleRetreat();
-
-
 
   displayVals();
   strip.show();
