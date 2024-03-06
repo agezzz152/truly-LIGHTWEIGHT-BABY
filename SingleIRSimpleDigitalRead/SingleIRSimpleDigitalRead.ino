@@ -10,9 +10,10 @@
 
 // digital pin 2 has a pushbutton attached to it. Give it a name:
 int IRPin = 2;
+int VCCpin = 6;
 int lastSeenChange = 0;
 int lastVal = 1;
-
+long long t1 = 0;
 
 // the setup routine runs once when you press reset:
 void setup() {
@@ -20,10 +21,13 @@ void setup() {
   Serial.begin(9600);
   // make the pushbutton's pin an input:
   pinMode(IRPin, INPUT);
+  pinMode(VCCpin, OUTPUT);
+  
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
+  t1 = millis();
   // read the input pin:
   int CurrentVal = digitalRead(IRPin);
   if (lastVal ^ CurrentVal)
@@ -41,6 +45,11 @@ void loop() {
   Serial.println(CurrentVal);
 
   lastVal = CurrentVal;
+  if (0 < (t1 % 1000)  && (t1 % 1000) < 10)
+    digitalWrite(VCCpin, 0);
+
+  else
+    digitalWrite(VCCpin, 1);
 }
 
 
