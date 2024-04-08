@@ -29,8 +29,10 @@ void loop() {
   if (val == 1)
     timeSinceChange = 0;
 
-  if (timeSinceChange < 25)
+  if (timeSinceChange < 35)
     IR1 = 1;
+  else
+    IR1 = 0;
 
   timeSinceChange++;
   displayIR();
@@ -38,7 +40,10 @@ void loop() {
 }
 
 void displayIR(){
-  Serial.println(IR1);
+  Serial.print(IR1);
+  Serial.print(" ");
+  Serial.println(checkIR(IRPin));
+  
 }
 
 bool checkIR(int PIN) {
