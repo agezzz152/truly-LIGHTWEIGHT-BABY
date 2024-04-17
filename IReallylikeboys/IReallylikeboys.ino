@@ -1,51 +1,35 @@
-/* dump.ino Example sketch for IRLib2
-   Illustrates how to receive an IR signal, decode it and print
-   information about it to the serial monitor.
+/*
+  AnalogReadSerial
+
+  Reads an analog input on pin 0, prints the result to the Serial Monitor.
+  Graphical representation is available using Serial Plotter (Tools > Serial Plotter menu).
+  Attach the center pin of a potentiometer to pin A0, and the outside pins to +5V and ground.
+
+  This example code is in the public domain.
+
+  https://www.arduino.cc/en/Tutorial/BuiltInExamples/AnalogReadSerial
 */
-//This includes everything. Not generally recommended.
-//It's better to include only the parts of library you really need.
-//But for this example it's quick and easy. See "comboDump" example
-//for a more efficient way.
-#include "IRLibAll.h"
-int IRPin = 2;
 
-int timeSinceChange = 0;
-IRrecvPCI myReceiver(IRPin);  //create receiver and pass pin number
-IRdecode myDecoder;           //create decoder
-int IR1 = 0;
+#include "MovingAverage.h"
 
+
+
+MovingAverage a(20);
+// the setup routine runs once when you press reset:
 void setup() {
-  Serial.begin(9600);
-  delay(2000);
-  while (!Serial)
-    ;                       //delay for Leonardo
-  myReceiver.enableIRIn();  // Start the receiver
-  Serial.println(F("Ready to receive IR signals"));
+  // initialize serial communication at 9600 bits per second:
+  Serial.begin(9600);   
 }
 
+// the loop routine runs over and over again forever:
 void loop() {
-  //Continue looping until you get a complete signal received
-  int val = checkIR(IRPin);
-  if (val == 1)
-    timeSinceChange = 0;
-
-  if (timeSinceChange < 35)
-    IR1 = 1;
-  else
-    IR1 = 0;
-
-  timeSinceChange++;
-  displayIR();
-  myReceiver.enableIRIn();  //Restart receiver
-}
-
-void displayIR(){
-  Serial.print(IR1);
-  Serial.print(" ");
-  Serial.println(checkIR(IRPin));
+  // read the input on analog pin 0:
+  float sensorValue = analogRead(A1);
+  // print out the value you read:
+  int b = a.updateData(sensorValue);
   
+  Serial.println(b);
 }
 
-bool checkIR(int PIN) {
-  return myReceiver.getResults();
-}
+
+
