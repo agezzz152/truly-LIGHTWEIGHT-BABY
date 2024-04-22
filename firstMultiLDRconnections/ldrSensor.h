@@ -1,27 +1,36 @@
 #ifndef __LDRSENSOR__
 #define __LDRSENSOR__
 #include <Arduino.h>
-
-#define CAP_VALUE 800
+#include "parameters.h"
 
 class ldrSensor {
 private:
-  const int _pin;
-  const int _index;
+  int _pin;
+  int _index;
   bool _activated = 0;
   float _LDRVal;
 
 public:
-
   ldrSensor() {}
 
-  ldrSensor(int p, int i): _pin(p), _index(i){  }
+  ldrSensor(int p, int i){
+    _pin = p; 
+    _index = i;
+  }
 
-  int getIndex() {
+  bool getStatus() const {
+    return _activated;
+  }
+
+  float getVal() const {
+    return _LDRVal;
+  }
+
+  int getIndex() const {
     return _index;
   }
 
-  int getAngle() {
+  int getAngle() const {
     return 70 + _index * 45;
   }
 
@@ -29,9 +38,11 @@ public:
     _LDRVal = analogRead(_pin);
     if (_LDRVal > CAP_VALUE)
       _activated = 1;
+    else
+      _activated = 0;
+
     return _activated;
   }
-
 };
 
 
