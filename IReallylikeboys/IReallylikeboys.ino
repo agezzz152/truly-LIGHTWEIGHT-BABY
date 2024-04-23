@@ -1,7 +1,6 @@
 
 #include "MovingAverage.h"
-
-#define NUM_IR 4
+#include "IRArray.h"
 
 MovingAverage IR[NUM_IR];
 
