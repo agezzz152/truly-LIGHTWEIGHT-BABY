@@ -1,14 +1,14 @@
 #ifndef __MOVING_AVERAGE__
 #define __MOVING_AVERAGE__
-#define num_array 20
+#include "parameters.h"
 
 class MovingAverage {
 private:
     int dataArray[num_array];
     int sizeOfDataArray = num_array;
-    int count;
+    int count = 0;
 public:
-    MovingAverage();
+    MovingAverage() {}
     float updateData(float value);
     void reset(void);
 };

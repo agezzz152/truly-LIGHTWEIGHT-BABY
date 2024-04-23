@@ -1,7 +1,7 @@
 #ifndef __IRSENSOR__
 #define __IRSENSOR__
 #include <Arduino.h>
-
+#include "parameters.h"
 
 class IRSensor {
 private:

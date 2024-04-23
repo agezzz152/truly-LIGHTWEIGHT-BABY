@@ -3,14 +3,20 @@
 
 #include "IRSensor.h"
 #include <Arduino.h>
-#define NUM_IR 5
+#include "parameters.h"
+
 
 class IRArray {
 private:
-  IRSensor[NUM_IR] sensors;
+  IRSensor sensors[NUM_IR];
+  float ballAngle;
 
 public:
   IRArray(int* pins);
+  int LowestIR();
+  void readVals();
+  float findBallAngle();
+  void display();
 };
 
 #endif
