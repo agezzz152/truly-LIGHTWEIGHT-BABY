@@ -35,7 +35,7 @@ float IRArray::findBallAngle() {
 
 void IRArray::display(){
   for (int i = 0; i < NUM_IR; i++){
-    Serial.print(sensors[i].GetValue);
+    Serial.print(sensors[i].GetValue());
     Serial.print(" | ");
   }
   Serial.print("Angle: ");

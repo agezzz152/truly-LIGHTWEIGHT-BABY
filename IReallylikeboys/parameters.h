@@ -2,7 +2,7 @@
 #define __PARAMETERS__
 #include <math.h>
 
-#define NUM_IR 5
+#define NUM_IR 8
 #define num_array 20
 
 
