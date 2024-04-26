@@ -8,13 +8,13 @@ private:
   int Index;
   float Angle;
   int Pin;
-  int Value;
+  float Value;
 
 public:
   IRSensor() {}
   IRSensor(int Pin, int index);
   void updateValue();
-  int GetValue();
+  float GetValue();
   float GetAngle();
 };
 

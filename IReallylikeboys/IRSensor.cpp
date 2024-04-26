@@ -12,7 +12,7 @@ void IRSensor::updateValue() {
   Value = analogRead(Pin);
 }
 
-int IRSensor::GetValue() {
+float IRSensor::GetValue() {
   return Value;
 }
 
