@@ -28,13 +28,17 @@ IRArray::IRArray(int *pins) {
 
 //only updates the values stored in the sensors array and returns nothingg
 void IRArray::readVals() {
-  for (int i = 0; i < NUM_IR; i++)
+  for (int i = 0; i < NUM_IR; i++){
     sensors[i].updateValue();
+    if (sensors[i].GetValue() > IRCAP)
+      sensors[i].SetVal(IRCAP);
+  }
+  
 }
 
 //read vals and then returns the minimum index of the min Value from the sensors array
 int IRArray::LowestIR() {
-  int minVal = 1000, minIndex = 0;
+  int minVal = IRCAP, minIndex = 0;
   for (int i = 0; i < NUM_IR; i++) {
     sensors[i].updateValue();
     if (sensors[i].GetValue() < minVal) {
@@ -62,7 +66,7 @@ float IRArray::findBallAngle() {
   readVals();
   //create an array of the same sensors and same vals but we are going to manipulate it
   IRSensor sensorsManipulated[NUM_IR];
-  for (int i = 0; i < 0; i++) {
+  for (int i = 0; i < NUM_IR; i++) {
     sensorsManipulated[i] = sensors[i];
   }
 

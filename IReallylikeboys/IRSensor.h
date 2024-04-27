@@ -13,6 +13,7 @@ private:
 public:
   IRSensor() {}
   IRSensor(int Pin, int index);
+  void SetVal(int val);
   void updateValue();
   float GetValue();
   float GetAngle();

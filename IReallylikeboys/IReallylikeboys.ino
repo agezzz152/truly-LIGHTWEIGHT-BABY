@@ -3,7 +3,7 @@
 #include "IRArray.h"
 #include "parameters.h"
 
-int IRPins[NUM_IR] = { A7, A8, A9, A10, A11, A12, A13, A14 };
+int IRPins[] = { A7, A8, A9, A10, A11, A12, A13, A14 };
 MovingAverage IR[NUM_IR];
 
 IRArray IRs(IRPins);

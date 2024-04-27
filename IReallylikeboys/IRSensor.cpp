@@ -8,9 +8,14 @@ IRSensor::IRSensor(int pin, int index) {
   Angle = Index * 45;
 }
 
-void IRSensor::updateValue() {
-  Value = analogRead(Pin);
+void IRSensor::SetVal(int val){ 
+  Value = val;
 }
+
+void IRSensor::updateValue() {
+  SetVal(analogRead(Pin));
+}
+
 
 float IRSensor::GetValue() {
   return Value;
