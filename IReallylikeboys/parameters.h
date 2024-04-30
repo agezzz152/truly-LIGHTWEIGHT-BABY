@@ -4,7 +4,7 @@
 
 #define NUM_IR 8
 #define num_array 20
-#define IRCAP 100
+#define IRCAP 10000
 
 
 

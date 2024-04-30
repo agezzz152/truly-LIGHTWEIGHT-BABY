@@ -28,11 +28,12 @@ IRArray::IRArray(int *pins) {
 
 //only updates the values stored in the sensors array and returns nothingg
 void IRArray::readVals() {
-  for (int i = 0; i < NUM_IR; i++) {
+  for (int i = 0; i < NUM_IR; i++){
     sensors[i].updateValue();
     if (sensors[i].GetValue() > IRCAP)
       sensors[i].SetVal(IRCAP);
   }
+  
 }
 
 //read vals and then returns the minimum index of the min Value from the sensors array
@@ -74,27 +75,15 @@ float IRArray::findBallAngle() {
 
   float closestAng = sensorsManipulated[0].GetAngle();
   float closestVal = sensorsManipulated[0].GetValue();
-  int i = 1;
-  float secClosestAng;
-  float secClosestVal;
-  int secIndex;
-  secClosestAng = sensorsManipulated[i].GetAngle();
-  secClosestVal = sensorsManipulated[i].GetValue();
-  secIndex = sensorsManipulated[i].GetValue();
-
-  // do {
-  //   secClosestAng = sensorsManipulated[i].GetAngle();
-  //   secClosestVal = sensorsManipulated[i].GetValue();
-  //   secIndex = sensorsManipulated[i].GetValue();
-  //   i++;
-  // } while (abs(secIndex - sensorsManipulated[0].getIndex()) > 5);
+  float secClosestAng = sensorsManipulated[1].GetAngle();
+  float secClosestVal = sensorsManipulated[1].GetValue();
 
   //if the two angles have a huge gap between them, they are 315 and 0 in that order
   if ((closestAng - secClosestAng) > 250)
     closestAng = closestAng + 360;
   //if the two angles have a minus huge gap between them, they are 0 and 315 in that order
   else if ((closestAng - secClosestAng) < -250)
-    secClosestAng -= 360;
+    secClosestAng = secClosestAng + 360;
 
   /*
   You want the ballAngle to be closestAng + corrections.
@@ -106,9 +95,7 @@ float IRArray::findBallAngle() {
   */
   ballAngle = closestAng + (secClosestAng - closestAng) / 2 * pow((closestVal / secClosestVal), 2);
   if (ballAngle > 360)
-    ballAngle -= 360;
-  if (ballAngle < 0)
-    ballAngle += 360;
+    ballAngle = ballAngle - 360;
 
   return ballAngle;
 }

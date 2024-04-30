@@ -6,14 +6,24 @@
 #include "motors.h"
 #include "parameters.h"
 #include "ldrArray.h"
+#include "MovingAverage.h"
+#include "IRArray.h"
 
 
+//IR lmao
+int IRPins[] = { A7, A8, A9, A10, A11, A12, A13, A14 };
+MovingAverage IR[NUM_IR];
+IRArray IRs(IRPins);
+
+
+//LDRS lmao
 // int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp
 int LdrPins[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
 ldrArray LDRs(LdrPins);
 bool isRetreating = 0;
 double lAng = 0;
 
+//motors lmao
 int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
 int in_1[] = { 30, 37, 35, 32 };
 int in_2[] = { 31, 36, 34, 33 };
@@ -46,20 +56,10 @@ void loop() {
   liniarSped = 75;
   spinSped = 0;
 
-  colorWipe(strip.Color(30, 0, 0), 50);
-  // if not during the proccess of retreating from a white line
-  if (!LDRs.getIsRetreating()) {
-    //finds out which ldrs are active
-    //calc the angle of the ldrs detected and store in global variable
-    LDRs.CalcLineAngle();
-    driver.moov(ang, liniarSped, spinSped);
-  }
+  IRs.findBallAngle();
 
-  //function for checking 
-  LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped);
 
-  displayVals();
-  strip.show();
+  driver.moov(ang, liniarSped, spinSped);
 }
 
 
