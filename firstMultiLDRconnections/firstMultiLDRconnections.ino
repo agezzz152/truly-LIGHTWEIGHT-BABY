@@ -4,7 +4,7 @@
 
 
 // int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp connections
-int LdrPins[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
+int LdrPins[NUM_LDR] = { A1, A2, A3, A4, A5, A6 };  //from the rightest LDR clockwise, with arduino connections
 ldrArray LDRs(LdrPins);
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -51,13 +51,13 @@ void displayVals() {
   Serial.print(LDRs.Angle());
   Serial.println(" |");
 
-  //when an ldr is activated, change the first and last led in the closest neopixel strip to it.
-  for (i = 0; i < NUM_LDR; i++) {
-    if (LDRs.getStatus_i(i)) {
-      strip.setPixelColor(i * 8, 100, 0, 50);
-      strip.setPixelColor(i * 8 + 7, 100, 0, 50);
-    }
-  }
+  // //when an ldr is activated, change the first and last led in the closest neopixel strip to it.
+  // for (i = 0; i < NUM_LDR; i++) {
+  //   if (LDRs.getStatus_i(i)) {
+  //     strip.setPixelColor(i * 8, 100, 0, 50);
+  //     strip.setPixelColor(i * 8 + 7, 100, 0, 50);
+  //   }
+  // }
 }
 
 // Fill the dots one after the other with a color
