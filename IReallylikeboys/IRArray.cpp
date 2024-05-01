@@ -78,16 +78,16 @@ float IRArray::findBallAngle() {
   float secClosestAng;
   float secClosestVal;
   int secIndex;
+  
+  secIndex = sensorsManipulated[i].getIndex();
+
+  do {
+    secIndex = sensorsManipulated[i].getIndex();
+    i++;
+  } while (abs(secIndex - sensorsManipulated[0].getIndex()) > 1 || abs(secIndex - sensorsManipulated[0].getIndex()) == NUM_IR - 1) ;
+
   secClosestAng = sensorsManipulated[i].GetAngle();
   secClosestVal = sensorsManipulated[i].GetValue();
-  secIndex = sensorsManipulated[i].GetValue();
-
-  // do {
-  //   secClosestAng = sensorsManipulated[i].GetAngle();
-  //   secClosestVal = sensorsManipulated[i].GetValue();
-  //   secIndex = sensorsManipulated[i].GetValue();
-  //   i++;
-  // } while (abs(secIndex - sensorsManipulated[0].getIndex()) > 5);
 
   //if the two angles have a huge gap between them, they are 315 and 0 in that order
   if ((closestAng - secClosestAng) > 250)
