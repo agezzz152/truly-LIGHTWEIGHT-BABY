@@ -23,10 +23,10 @@ void PixyCam::UpdateData() {
     Serial.print("Detected ");
     Serial.println(pixy.ccc.numBlocks);
     for (i = 0; i<pixy.ccc.numBlocks; i++) {
-    // Serial.print(" block ");
-    // Serial.print(i);
-    // Serial.print(": ");
-    // pixy.ccc.blocks[i].print();
+    Serial.print(" block ");
+    Serial.print(i);
+    Serial.print(": ");
+    pixy.ccc.blocks[i].print();
     BlockHeight = pixy.ccc.blocks[i].m_height;
     Distance = CalculateDistance(BlockHeight);
     BlockXPos = pixy.ccc.blocks[i].m_x;
@@ -38,7 +38,7 @@ void PixyCam::UpdateData() {
 float PixyCam::CalculateDistance(float height) {
   float dist;
   float a = height;
-  dist = 1856.6 * pow(a, -0.88);
+  dist = 173.6 * pow(2.71, (-0.023 * a)); // ==> 1856.6 * pow(a, -0.88) old nums
   return dist;
 }
 
