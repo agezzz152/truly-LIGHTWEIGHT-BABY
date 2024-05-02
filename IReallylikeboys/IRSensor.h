@@ -2,6 +2,7 @@
 #define __IRSENSOR__
 #include <Arduino.h>
 #include "parameters.h"
+#include "MovingAverage.h"
 
 class IRSensor {
 private:
@@ -9,6 +10,7 @@ private:
   float Angle;
   int Pin;
   float Value;
+  MovingAverage Vals; 
 
 public:
   IRSensor() {}
