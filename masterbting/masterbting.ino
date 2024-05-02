@@ -58,7 +58,6 @@ void loop() {
 
   IRs.findBallAngle();
 
-
   driver.moov(ang, liniarSped, spinSped);
 }
 
