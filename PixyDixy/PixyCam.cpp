@@ -9,10 +9,10 @@ PixyCam::PixyCam() {
 
 void PixyCam::UpdateData() {
 
-  BlockHeight = 0;
-  Distance = 0;
-  BlockXPos = 0;
-  Angle = 0;
+  BlockHeight = -1000;
+  Distance = -1000;
+  BlockXPos = -1000;
+  Angle = -1000;
 
 
   
@@ -27,10 +27,21 @@ void PixyCam::UpdateData() {
     Serial.print(i);
     Serial.print(": ");
     pixy.ccc.blocks[i].print();
-    BlockHeight = pixy.ccc.blocks[i].m_height;
-    Distance = CalculateDistance(BlockHeight);
-    BlockXPos = pixy.ccc.blocks[i].m_x;
-    Angle = CalculateAngle(Distance, BlockXPos);
+
+    if (pixy.ccc.blocks[i].m_signature == 1) {
+      detectedGoal = 0;
+      BlockHeight[0] = pixy.ccc.blocks[i].m_height;
+      Distance[0] = CalculateDistance(BlockHeight);
+      BlockXPos[0] = pixy.ccc.blocks[i].m_x;
+      Angle[0] = CalculateAngle(Distance, BlockXPos);
+    }
+
+    else if (pixy.ccc.blocks[i].m_signature == 2) {
+      detectedGoal = 1;
+      BlockHeight[1] = pixy.ccc.blocks[i].m_height;
+      Distance[1] = CalculateDistance(BlockHeight);
+      BlockXPos[1] = pixy.ccc.blocks[i].m_x;
+      Angle[1] = CalculateAngle(Distance, BlockXPos);
     }
   }
 }
@@ -55,10 +66,14 @@ float PixyCam::CalculateAngle(float distance, float x) {
   return ang;
 }
 
-float PixyCam::GetDistance() {
-  return Distance;
+float PixyCam::GetDistance(int index) {
+  return Distance[index];
 }
 
-float PixyCam::GetAngle() {
-  return Angle;
+float PixyCam::GetAngle(int index) {
+  return Angle[index];
+}
+
+int getGoal() {
+  return detectedGoal;
 }

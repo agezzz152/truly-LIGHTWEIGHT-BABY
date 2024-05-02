@@ -10,6 +10,7 @@ void setup() {
 
 void loop() {
   pixy.UpdateData();
+  int goal = pixy.
   Serial.print("Distance: ");
   Serial.print(pixy.GetDistance());
   Serial.print(" Angle: ");
