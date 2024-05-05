@@ -2,7 +2,7 @@
 
 //neopixel7
 #define PIN 5          // Define the pin you're using to control the Neopixels
-#define NUM_PIXELS 32  // Define the number of Neopixels in your strip
+#define NUM_PIXELS 48  // Define the number of Neopixels in your strip
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 const int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
@@ -103,7 +103,16 @@ void colorWipe(uint32_t color) {
 void loop() {
   //turnes the entire neopixel strip to the color red
   colorWipe(strip.Color(40, 0, 0));
+  double ang = 315;
+  double linSPed = 175;
+  double Spin;
+  // Spin = (180 - abs(ang - 180)) / 180 * linSPed;
+  Spin = linSPed/(180*180) * ang * (360 - ang);
+  // Spin = linSPed / 3;
+  if (ang >= 180) {
+    Spin = -Spin;
+  }
 
-  moov(180, 150, 0);
+  moov(0, linSPed, Spin);
   delay(10);
 }
