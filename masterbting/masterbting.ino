@@ -53,10 +53,10 @@ void setup() {
 
 void loop() {
   ang = 0;
-  liniarSped = 75;
+  liniarSped = 150;
   spinSped = 0;
 
-  IRs.findBallAngle();
+  ang = -IRs.findBallAngle();
 
   driver.moov(ang, liniarSped, spinSped);
 }
