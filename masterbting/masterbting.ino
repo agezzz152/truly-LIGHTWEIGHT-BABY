@@ -45,8 +45,8 @@ void loop() {
   ang = 0;
   liniarSped = 75;
   spinSped = 0;
-
-  colorWipe(strip.Color(30, 0, 0), 50);
+  //LDRs.ReadAllLDR();
+  colorWipe(strip.Color(100, 100, 100), 50);
   // if not during the proccess of retreating from a white line
   if (!LDRs.getIsRetreating()) {
     //finds out which ldrs are active

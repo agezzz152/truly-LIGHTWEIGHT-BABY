@@ -102,8 +102,14 @@ void colorWipe(uint32_t color) {
 
 void loop() {
   //turnes the entire neopixel strip to the color red
-  colorWipe(strip.Color(40, 0, 0));
+  //colorWipe(strip.Color(40, 0, 0));
 
-  moov(180, 150, 0);
-  delay(10);
+  moov(0, 0, 150);
+  //delay(10);
+
+  //int n = 2;
+  //digitalWrite(in_1[n], 1);
+  //digitalWrite(in_2[n], 0);
+  //analogWrite(pwm[n], 150);
+
 }
