@@ -10,10 +10,10 @@ void setup() {
 
 void loop() {
   pixy.UpdateData();
-  int goal = pixy.
+  int goal = pixy.getGoal();
   Serial.print("Distance: ");
-  Serial.print(pixy.GetDistance());
+  Serial.print(pixy.GetDistance(goal));
   Serial.print(" Angle: ");
-  Serial.println(pixy.GetAngle());
+  Serial.println(pixy.GetAngle(goal));
   delay(200);
 }
