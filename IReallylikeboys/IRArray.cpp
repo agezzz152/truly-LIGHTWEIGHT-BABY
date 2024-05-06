@@ -84,7 +84,7 @@ float IRArray::findBallAngle() {
   do {
     i++;
     secIndex = sensorsManipulated[i].getIndex();
-  } while (abs(secIndex - sensorsManipulated[0].getIndex()) > 2 && abs(secIndex - sensorsManipulated[0].getIndex()) != NUM_IR - 1) ;
+  } while (abs(secIndex - sensorsManipulated[0].getIndex()) > NUM_SPACES_FROM_CLOSEST_IR && abs(secIndex - sensorsManipulated[0].getIndex()) != NUM_IR - 1) ;
 
   secClosestAng = sensorsManipulated[i].GetAngle();
   secClosestVal = sensorsManipulated[i].GetValue();

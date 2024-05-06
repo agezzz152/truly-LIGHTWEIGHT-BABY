@@ -5,7 +5,7 @@
 IRSensor::IRSensor(int pin, int index) {
   Pin = pin;
   Index = index;
-  Angle = -22.5 + Index * 45;
+  Angle = ANGLE_FIX + Index * 45;
 }
 
 void IRSensor::SetVal(int val){ 
