@@ -102,17 +102,21 @@ void colorWipe(uint32_t color) {
 
 void loop() {
   //turnes the entire neopixel strip to the color red
-  colorWipe(strip.Color(40, 0, 0));
-  double ang = 315;
-  double linSPed = 175;
-  double Spin;
-  // Spin = (180 - abs(ang - 180)) / 180 * linSPed;
-  Spin = linSPed/(180*180) * ang * (360 - ang);
-  // Spin = linSPed / 3;
-  if (ang >= 180) {
-    Spin = -Spin;
-  }
+  // colorWipe(strip.Color(40, 0, 0));
+  // double ang = 315;
+  // double linSPed = 175;
+  // double Spin;
+  // // Spin = (180 - abs(ang - 180)) / 180 * linSPed;
+  // Spin = linSPed/(180*180) * ang * (360 - ang);
+  // // Spin = linSPed / 3;
+  // if (ang >= 180) {
+  //   Spin = -Spin;
+  // }
 
-  moov(0, linSPed, Spin);
-  delay(10);
+  moov(90, 150, 0);
+  // delay(10);
+  // int n = 3;
+  // digitalWrite(in_1[n], 1);
+  // digitalWrite(in_2[n], 0);
+  // analogWrite(pwm[n], 150);
 }

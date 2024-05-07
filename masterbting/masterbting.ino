@@ -11,7 +11,7 @@
 
 
 //IR lmao
-int IRPins[] = { A7, A8, A9, A10, A11, A12, A13, A14 };
+int IRPins[] = { A8, A9, A10, A11, A12, A13, A14, A15 };
 MovingAverage IR[NUM_IR];
 IRArray IRs(IRPins);
 
@@ -54,11 +54,11 @@ void setup() {
 void loop() {
   ang = 0;
   liniarSped = 150;
-  spinSped = 0;
+  spinSped = 20;
 
   ang = -IRs.findBallAngle();
 
-
+  IRs.display();
   // spinSped = liniarSped / (180 * 180) * ang * (360 - ang);
   // if (ang >= 180) {
   //   spinSped = -spinSped;
