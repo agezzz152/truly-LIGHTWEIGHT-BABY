@@ -15,7 +15,7 @@ void setup() {
 
 // the loop routine runs over and over again forever:
 void loop() {
-  //IRs.findBallAngle();
-  IRs.getBallAngle();
+  IRs.findBallAngle();
+  // IRs.getBallAngle();
   IRs.display();
 }

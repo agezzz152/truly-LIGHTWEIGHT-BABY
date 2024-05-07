@@ -52,19 +52,29 @@ void setup() {
 
 
 void loop() {
+  colorWipe(strip.Color(30,30,30), 50);
   ang = 0;
-  liniarSped = 150;
-  spinSped = 20;
+  liniarSped = 125;
+  spinSped = 0;
 
-  ang = -IRs.findBallAngle();
+  ang = IRs.findBallAngle();
+  // IRs.display();
 
-  IRs.display();
+
   // spinSped = liniarSped / (180 * 180) * ang * (360 - ang);
   // if (ang >= 180) {
   //   spinSped = -spinSped;
   // }
+  // if (ang > 20 && ang <= 180)
+  //   spinSped = 50;
+  // else if (ang > 180 && ang < 340)
+  //   spinSped = -50;
+  // else
+  //  spinSped = 0;
+
 
   driver.moov(ang, liniarSped, spinSped);
+  strip.show();
 }
 
 
