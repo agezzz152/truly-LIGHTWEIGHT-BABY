@@ -11,6 +11,12 @@ void setup() {
 void loop() {
   pixy.UpdateData();
   int goal = pixy.getGoal();
+  if (goal == 0) {
+    Serial.print("Blue: ");
+  }
+  else if (goal == 1) {
+    Serial.print("Yellow: ");
+  }
   Serial.print("Distance: ");
   Serial.print(pixy.GetDistance(goal));
   Serial.print(" Angle: ");
