@@ -8,4 +8,7 @@
 #define RETREAT_DELAY 50
 #define NUM_MOTORS 4
 
+#define OwnGoal 0
+#define EnemyGoal 1
+
 #endif

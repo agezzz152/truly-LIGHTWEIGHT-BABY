@@ -6,7 +6,7 @@
 #include "motors.h"
 #include "parameters.h"
 #include "ldrArray.h"
-
+#include "PixyCam.h"
 
 // int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp
 int LdrPins[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
@@ -22,7 +22,7 @@ motors driver(pwm, in_1, in_2);
 
 double ang, liniarSped, spinSped;
 
-
+PixyCam pixy;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
@@ -45,23 +45,51 @@ void loop() {
   ang = 0;
   liniarSped = 75;
   spinSped = 0;
+  
   //LDRs.ReadAllLDR();
   colorWipe(strip.Color(100, 100, 100), 50);
   // if not during the proccess of retreating from a white line
-  if (!LDRs.getIsRetreating()) {
+  //if (!LDRs.getIsRetreating()) {
     //finds out which ldrs are active
     //calc the angle of the ldrs detected and store in global variable
-    LDRs.CalcLineAngle();
-    driver.moov(ang, liniarSped, spinSped);
-  }
+  //  LDRs.CalcLineAngle();
+  //  driver.moov(ang, liniarSped, spinSped);
+  //}
 
   //function for checking 
-  LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped);
+  //LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped);
 
-  displayVals();
+  //displayVals();
+
+
+  pixy.UpdateData();
+  driver.moov(0, 0, 40);
+  int goal = pixy.getGoal();
+    if (pixy.GetAngle(EnemyGoal) >= -10 && pixy.GetAngle(EnemyGoal <= 10) ) {
+      driver.moov(0, 100, 0);
+      myDelaymill(2000);
+      driver.moov(180, 50, 0);
+      myDelaymill(2000);
+    }
   strip.show();
 }
 
+
+void myDelaymill(int millDelay) {
+  int startTime = millis();
+  //Serial.print("StartTime: ");
+  //Serial.println(startTime);
+  int currentT;
+  while (true) {
+    currentT = millis();
+    //Serial.print("CurrentT: ");
+    //Serial.println(currentT);
+    if (currentT >= startTime + millDelay) {
+      break;
+    }
+  }
+
+}
 
 
 
