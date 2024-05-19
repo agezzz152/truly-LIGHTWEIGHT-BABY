@@ -4,8 +4,8 @@
 #include "parameters.h"
 #include "wheel.h"
   
-
-
+int signOfX(const int &x);
+void myDelay(int millDelay);
 
 class motors {
 private:
@@ -21,7 +21,13 @@ public:
 
   void motorSetup();
 
-  void moov(double angle, const double &sped, const double &speen);
+  void moov(double dirAngle, const double &sped, const double &speen);
+
+  void moovMultiDirSimple();
+
+  void simpleMotorTest(int a = 0, int b = NUM_MOTORS);
+
+  void BasicAngleMooving(const double &ang, const double &liniarSped, const double &spinSped);
 };
 
 

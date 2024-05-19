@@ -99,6 +99,22 @@ void colorWipe(uint32_t color) {
   }
 }
 
+void myDelay(int millDelay) {
+  int startTime = millis();
+  //Serial.print("StartTime: ");
+  //Serial.println(startTime);
+  int currentT;
+  while (true) {
+    currentT = millis();
+    //Serial.print("CurrentT: ");
+    //Serial.println(currentT);
+    if (currentT >= startTime + millDelay) {
+      break;
+    }
+  }
+
+}
+
 
 void loop() {
   //turnes the entire neopixel strip to the color red
@@ -113,8 +129,17 @@ void loop() {
   //   Spin = -Spin;
   // }
 
-  moov(90, 150, 0);
-  // delay(10);
+  
+
+  moov(0, 0 , 100);
+  // myDelay(500);
+  // moov(180,100,0);
+  // myDelay(500);
+  // moov(90, 100, 0);
+  // myDelay(500);
+  // moov(270,100,0);
+  // myDelay(500);
+  delay(10);
   // int n = 3;
   // digitalWrite(in_1[n], 1);
   // digitalWrite(in_2[n], 0);

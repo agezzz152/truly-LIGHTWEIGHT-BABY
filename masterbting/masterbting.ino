@@ -9,15 +9,19 @@
 #include "MovingAverage.h"
 #include "IRArray.h"
 
+long int currentT;
+long int startT;
+
+int resetPin = 7;
+
 
 //IR lmao
 int IRPins[] = { A8, A9, A10, A11, A12, A13, A14, A15 };
-MovingAverage IR[NUM_IR];
 IRArray IRs(IRPins);
 
 
 //LDRS lmao
-// int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp
+int const LDR[] = { 15, 2, 4, 13, 12, 14 };         //from the rightest LDR clockwise, with esp
 int LdrPins[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
 ldrArray LDRs(LdrPins);
 bool isRetreating = 0;
@@ -36,35 +40,47 @@ double ang, liniarSped, spinSped;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-  Serial.begin(9600);
+  // Serial.begin(9600);
+  digitalWrite(resetPin, HIGH);
+
 
   //motors:
   driver.motorSetup();
 
+  startT = millis();
   //neoPixel:
   strip.begin();
   strip.show();  // onWhiteLinee all pixels to 'off'
-  strip.setBrightness(100);
+  strip.setBrightness(0);
 
   //Led for control
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(resetPin, OUTPUT);
 }
 
 
 void loop() {
-  colorWipe(strip.Color(30,30,30), 50);
+  currentT = millis();
+  colorWipe(strip.Color(0, 0, 0), 50);
   ang = 0;
   liniarSped = 125;
   spinSped = 0;
 
   ang = IRs.findBallAngle();
   // IRs.display();
+  driver.moov(ang, liniarSped, spinSped);
+
+  myDelay(20);
+
+  if (currentT > startT + RESET_TIMER) {
+    digitalWrite(resetPin, LOW);
+  }
 
 
   // spinSped = liniarSped / (180 * 180) * ang * (360 - ang);
   // if (ang >= 180) {
   //   spinSped = -spinSped;
-  // }
+  // }0
   // if (ang > 20 && ang <= 180)
   //   spinSped = 50;
   // else if (ang > 180 && ang < 340)
@@ -73,7 +89,7 @@ void loop() {
   //  spinSped = 0;
 
 
-  driver.moov(ang, liniarSped, spinSped);
+  // driver.moov(ang, liniarSped, spinSped);
   strip.show();
 }
 
@@ -106,6 +122,7 @@ void displayVals() {
     }
   }
 }
+
 
 
 // Fill the dots one after the other with a color
