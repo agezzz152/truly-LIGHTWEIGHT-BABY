@@ -14,12 +14,12 @@ void setup() {
 
   strip.begin();
   strip.show();  // Initialize all pixels to 'off'
-  strip.setBrightness(100);
+  strip.setBrightness(180);
 }
 
 void loop() {
 
-  colorWipe(strip.Color(30, 0, 0), 50);
+  colorWipe(strip.Color(30, 30, 30), 50);
   //detects which ldrs are activated and detect someting bellow them.
   LDRs.CalcLineAngle();
   //prints ldr vals, the angle detected and the activated ldrs. also lights up neopixel near activaed ldr in purple

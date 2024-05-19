@@ -2,7 +2,7 @@
 
 //neopixel7
 #define PIN 5          // Define the pin you're using to control the Neopixels
-#define NUM_PIXELS 32  // Define the number of Neopixels in your strip
+#define NUM_PIXELS 48  // Define the number of Neopixels in your strip
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 const int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
@@ -99,17 +99,50 @@ void colorWipe(uint32_t color) {
   }
 }
 
+void myDelay(int millDelay) {
+  int startTime = millis();
+  //Serial.print("StartTime: ");
+  //Serial.println(startTime);
+  int currentT;
+  while (true) {
+    currentT = millis();
+    //Serial.print("CurrentT: ");
+    //Serial.println(currentT);
+    if (currentT >= startTime + millDelay) {
+      break;
+    }
+  }
+
+}
+
 
 void loop() {
   //turnes the entire neopixel strip to the color red
-  //colorWipe(strip.Color(40, 0, 0));
+  // colorWipe(strip.Color(40, 0, 0));
+  // double ang = 315;
+  // double linSPed = 175;
+  // double Spin;
+  // // Spin = (180 - abs(ang - 180)) / 180 * linSPed;
+  // Spin = linSPed/(180*180) * ang * (360 - ang);
+  // // Spin = linSPed / 3;
+  // if (ang >= 180) {
+  //   Spin = -Spin;
+  // }
 
-  moov(0, 0, 150);
-  //delay(10);
+  
 
-  //int n = 2;
-  //digitalWrite(in_1[n], 1);
-  //digitalWrite(in_2[n], 0);
-  //analogWrite(pwm[n], 150);
+  moov(0, 0 , 100);
+  // myDelay(500);
+  // moov(180,100,0);
+  // myDelay(500);
+  // moov(90, 100, 0);
+  // myDelay(500);
+  // moov(270,100,0);
+  // myDelay(500);
+  delay(10);
+  // int n = 3;
+  // digitalWrite(in_1[n], 1);
+  // digitalWrite(in_2[n], 0);
+  // analogWrite(pwm[n], 150);
 
 }

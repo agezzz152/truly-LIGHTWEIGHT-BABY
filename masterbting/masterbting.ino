@@ -6,14 +6,31 @@
 #include "motors.h"
 #include "parameters.h"
 #include "ldrArray.h"
+#include "MovingAverage.h"
+#include "IRArray.h"
+
 #include "PixyCam.h"
 
-// int const LDR[] = { 15, 2, 4, 13, 12, 14 };  //from the rightest LDR clockwise, with esp
+
+long int currentT;
+long int startT;
+
+int resetPin = 7;
+
+
+//IR lmao
+int IRPins[] = { A8, A9, A10, A11, A12, A13, A14, A15 };
+IRArray IRs(IRPins);
+
+
+//LDRS lmao
+int const LDR[] = { 15, 2, 4, 13, 12, 14 };         //from the rightest LDR clockwise, with esp
 int LdrPins[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
 ldrArray LDRs(LdrPins);
 bool isRetreating = 0;
 double lAng = 0;
 
+//motors lmao
 int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
 int in_1[] = { 30, 37, 35, 32 };
 int in_2[] = { 31, 36, 34, 33 };
@@ -26,70 +43,95 @@ PixyCam pixy;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-  Serial.begin(9600);
+  // Serial.begin(9600);
+  digitalWrite(resetPin, HIGH);
+
 
   //motors:
   driver.motorSetup();
 
+  startT = millis();
   //neoPixel:
   strip.begin();
   strip.show();  // onWhiteLinee all pixels to 'off'
-  strip.setBrightness(100);
+  strip.setBrightness(0);
 
   //Led for control
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(resetPin, OUTPUT);
 }
 
 
 void loop() {
+  currentT = millis();
+  colorWipe(strip.Color(0, 0, 0), 50);
   ang = 0;
-  liniarSped = 75;
+  liniarSped = 125;
   spinSped = 0;
+
   
-  //LDRs.ReadAllLDR();
+  //if you want robot to chase ball: 
+  /*
+  ang = IRs.findBallAngle();
+  // IRs.display();
+  driver.moov(ang, liniarSped, spinSped);
+
+  myDelay(20);
+
+  if (currentT > startT + RESET_TIMER) {
+    digitalWrite(resetPin, LOW);
+  }
+  */
+
+
+  // spinSped = liniarSped / (180 * 180) * ang * (360 - ang);
+  // if (ang >= 180) {
+  //   spinSped = -spinSped;
+  // }0
+  // if (ang > 20 && ang <= 180)
+  //   spinSped = 50;
+  // else if (ang > 180 && ang < 340)
+  //   spinSped = -50;
+  // else
+  //  spinSped = 0;
+
+
+  //if you want robot to move strait and avoid white lines:
+  /*
+   driver.moov(ang, liniarSped, spinSped);
+
+  
   colorWipe(strip.Color(100, 100, 100), 50);
   // if not during the proccess of retreating from a white line
-  //if (!LDRs.getIsRetreating()) {
-    //finds out which ldrs are active
-    //calc the angle of the ldrs detected and store in global variable
-  //  LDRs.CalcLineAngle();
-  //  driver.moov(ang, liniarSped, spinSped);
-  //}
+  if (!LDRs.getIsRetreating()) {
+    finds out which ldrs are active
+    calc the angle of the ldrs detected and store in global variable
+   LDRs.CalcLineAngle();
+   driver.moov(ang, liniarSped, spinSped);
+  }
 
-  //function for checking 
-  //LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped);
+  //function for checking if we are in the middle of a retreat
+  LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped);
 
   //displayVals();
+  */
 
-
+  
+  //if you want the robot to moov back and forth only if you can see the enemy goal
+//   /*
   pixy.UpdateData();
   driver.moov(0, 0, 40);
   int goal = pixy.getGoal();
     if (pixy.GetAngle(EnemyGoal) >= -10 && pixy.GetAngle(EnemyGoal <= 10) ) {
       driver.moov(0, 100, 0);
-      myDelaymill(2000);
+      myDelay(2000);
       driver.moov(180, 50, 0);
-      myDelaymill(2000);
+      myDelay(2000);
     }
   strip.show();
 }
+*/
 
-
-void myDelaymill(int millDelay) {
-  int startTime = millis();
-  //Serial.print("StartTime: ");
-  //Serial.println(startTime);
-  int currentT;
-  while (true) {
-    currentT = millis();
-    //Serial.print("CurrentT: ");
-    //Serial.println(currentT);
-    if (currentT >= startTime + millDelay) {
-      break;
-    }
-  }
-
-}
 
 
 
@@ -119,6 +161,7 @@ void displayVals() {
     }
   }
 }
+
 
 
 // Fill the dots one after the other with a color

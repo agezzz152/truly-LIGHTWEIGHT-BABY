@@ -14,6 +14,7 @@ float avgAngs(float &a, float &b);
 class IRArray {
 private:
   IRSensor sensors[NUM_IR];
+  MovingAverage ballAngs;
   float ballAngle;
 
 public:
@@ -23,7 +24,7 @@ public:
   float avgIRVal();
   float findBallAngle();
   void display();
-  void CalculateSimpleAngle();
+  float CalculateAngle();
   float getBallAngle();
 };
 

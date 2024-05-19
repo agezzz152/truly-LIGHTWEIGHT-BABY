@@ -1,8 +1,24 @@
 #include "motors.h"
 
-int signOfX(const int& x) {
+int signOfX(const int &x) {
   return x / abs(x);
 }
+
+void myDelay(int millDelay) {
+  int startTime = millis();
+  //Serial.print("StartTime: ");
+  //Serial.println(startTime);
+  int currentT;
+  while (true) {
+    currentT = millis();
+    //Serial.print("CurrentT: ");
+    //Serial.println(currentT);
+    if (currentT >= startTime + millDelay) {
+      break;
+    }
+  }
+}
+
 
 motors::motors(int *pwm, int *in1, int *in2) {
   for (int i = 0; i < NUM_MOTORS; i++) {
@@ -18,6 +34,48 @@ void motors::motorSetup() {
   for (int i = 0; i < NUM_MOTORS; i++) {
     wheels[i].wheelSetup();
   }
+}
+
+void motors::simpleMotorTest(int a, int b) {
+  //For Clock wise motion , in_1 = High , in_2 = Low
+
+  for (int i = a; i < b; i++) {
+    wheels[i].writeIN1(HIGH);
+    wheels[i].writeIN2(LOW);
+    wheels[i].writePWM(100);
+  }
+
+  myDelay(1000);
+
+  for (int i = a; i < b; i++) {
+    wheels[i].writeIN1(LOW);
+    wheels[i].writeIN2(HIGH);
+  }
+
+  myDelay(1000);
+}
+
+
+void motors::moovMultiDirSimple() {
+  moov(0, 0, 100);
+  myDelay(500);
+  moov(180, 100, 0);
+  myDelay(500);
+  moov(90, 100, 0);
+  myDelay(500);
+  moov(270, 100, 0);
+  myDelay(500);
+}
+
+void motors::BasicAngleMooving(const double &ang, const double &liniarSped, const double &spinSped) {
+  if (ang <= 45 || ang >= 315)
+    moov(0, liniarSped, spinSped);
+  else if (ang >= 45 && ang <= 135)
+    moov(90, liniarSped, spinSped);
+  else if (ang >= 135 && ang <= 225)
+    moov(180, liniarSped, spinSped);
+  else if (ang >= 225 && ang <= 315)
+    moov(270, liniarSped, spinSped);
 }
 
 

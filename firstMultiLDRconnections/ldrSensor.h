@@ -2,12 +2,15 @@
 #define __LDRSENSOR__
 #include <Arduino.h>
 #include "parameters.h"
+#include "MovingAverage.h"
+
 
 class ldrSensor {
 private:
   int _pin;
   int _index;
   bool _activated = 0;
+  MovingAverage _LDRValss;
   float _LDRVal;
 
 public:
@@ -35,8 +38,8 @@ public:
   }
 
   bool read() {
-    _LDRVal = analogRead(_pin);
-    if (_LDRVal > CAP_VALUE)
+    _LDRVal = _LDRValss.updateData(analogRead(_pin)); 
+    if (_LDRVal < CAP_VALUE)
       _activated = 1;
     else
       _activated = 0;

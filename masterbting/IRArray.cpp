@@ -19,10 +19,6 @@ float avgAngs(float &a, float &b) {
   return avg;
 }
 
-float IRArray::getBallAngle() {
-  return ballAngle;
-}
-
 //initiates the sensors array to include the correct pins and indexes
 IRArray::IRArray(int *pins) {
   for (int i = 0; i < NUM_IR; i++) {
@@ -82,13 +78,13 @@ float IRArray::findBallAngle() {
   float secClosestAng;
   float secClosestVal;
   int secIndex;
-
+  
   secIndex = sensorsManipulated[i].getIndex();
 
   do {
     i++;
     secIndex = sensorsManipulated[i].getIndex();
-  } while (abs(secIndex - sensorsManipulated[0].getIndex()) > NUM_SPACES_FROM_CLOSEST_IR && abs(secIndex - sensorsManipulated[0].getIndex()) != NUM_IR - 1);
+  } while (abs(secIndex - sensorsManipulated[0].getIndex()) > NUM_SPACES_FROM_CLOSEST_IR && abs(secIndex - sensorsManipulated[0].getIndex()) != NUM_IR - 1) ;
 
   secClosestAng = sensorsManipulated[i].GetAngle();
   secClosestVal = sensorsManipulated[i].GetValue();
@@ -114,33 +110,10 @@ float IRArray::findBallAngle() {
   if (ballAngle < 0)
     ballAngle += 360;
 
+  ballAngle = ballAngs.updateData(ballAngle);
   return ballAngle;
 }
 
-
-void IRArray::CalculateSimpleAngle() {
-  readVals();
-  IRSensor sensorsManipulated[NUM_IR];
-  for (int i = 0; i < NUM_IR; i++) {
-    sensorsManipulated[i] = sensors[i];
-  }
-
-  shellSortKnuth(sensorsManipulated, NUM_IR, lessThen);
-
-  IRSensor closest = sensorsManipulated[0];
-  IRSensor SecClosest = sensorsManipulated[1];
-  float closestAng = closest.GetAngle();
-  float secClosestAng = SecClosest.GetAngle();
-  //if the two angles have a huge gap between them, they are 315 and 0 in that order
-  if ((closestAng - secClosestAng) > 250)
-    secClosestAng += 360;
-  //if the two angles have a minus huge gap between them, they are 0 and 315 in that order
-  else if ((closestAng - secClosestAng) < -250)
-    secClosestAng -= 360;
-  //float angle = avgAngs(closestAng, secClosestAng);
-  float angle = closestAng;
-  ballAngle = angle;
-}
 
 void IRArray::display() {
   for (int i = 0; i < NUM_IR; i++) {
@@ -149,4 +122,29 @@ void IRArray::display() {
   }
   Serial.print("Angle: ");
   Serial.println(ballAngle);
+}
+
+
+float IRArray::CalculateAngle() {
+  readVals();
+  IRSensor sensorsManipulated[NUM_IR];
+  for (int i = 0; i < NUM_IR; i++) {
+    sensorsManipulated[i] = sensors[i];
+  }
+
+  shellSortKnuth(sensorsManipulated, NUM_IR, lessThen);
+  
+  //IRSensor closest = sensorsManipulated[0];
+  ballAngle = sensorsManipulated[0].GetAngle();
+  //if the two angles have a huge gap between them, they are 315 and 0 in that order
+
+  //if the two angles have a minus huge gap between them, they are 0 and 315 in that order
+
+  //float angle = avgAngs(closestAng, secClosestAng);
+  //ballAngle = closestAng;
+  return ballAngle; 
+}
+
+float IRArray::getBallAngle() {
+  return ballAngle;
 }
