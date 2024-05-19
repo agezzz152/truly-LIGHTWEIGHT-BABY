@@ -8,14 +8,14 @@
 
 class wheel {
 private:
-  int _pwm, _in1, _in2;
-  int _index;  //0 = RF, 1 = RB, 2 = LB, 3 = LF
+  int _pwm, _in1, _in2; //Assigns each wheel it's pin values
+  int _index;  //0 = RF, 1 = RB, 2 = LB, 3 = LF 
 
 
 public:
   wheel() {}
 
-  wheel(int& pwm, int& in1, int& in2, int& idx) {
+  wheel(int& pwm, int& in1, int& in2, int& idx) { //Sets the recieved value as the object's values
     _pwm = pwm;
     _in1 = in1;
     _in2 = in2;
@@ -29,15 +29,15 @@ public:
   }
 
   void writePWM(int pwmVal) {
-    analogWrite(_pwm, pwmVal);
+    analogWrite(_pwm, pwmVal); //Writes the pwm value to the PWMpin of the wheel with the recieved value.
   }
 
   void writeIN1(bool in1Val) {
-    digitalWrite(_in1, in1Val);
+    digitalWrite(_in1, in1Val); // Writes a digital value to in1 pin of the wheel: 0 / 1
   }
 
   void writeIN2(bool in2Val) {
-    digitalWrite(_in2, in2Val);
+    digitalWrite(_in2, in2Val); // Writes a digital value to in1 pin of the wheel: 0 / 1
   }
 };
 
