@@ -23,7 +23,7 @@ public:
   float avgIRVal();
   float findBallAngle();
   void display();
-  void CalculateAngle();
+  void CalculateSimpleAngle();
   float getBallAngle();
 };
 

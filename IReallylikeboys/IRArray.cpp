@@ -19,6 +19,10 @@ float avgAngs(float &a, float &b) {
   return avg;
 }
 
+float IRArray::getBallAngle() {
+  return ballAngle;
+}
+
 //initiates the sensors array to include the correct pins and indexes
 IRArray::IRArray(int *pins) {
   for (int i = 0; i < NUM_IR; i++) {
@@ -78,13 +82,13 @@ float IRArray::findBallAngle() {
   float secClosestAng;
   float secClosestVal;
   int secIndex;
-  
+
   secIndex = sensorsManipulated[i].getIndex();
 
   do {
     i++;
     secIndex = sensorsManipulated[i].getIndex();
-  } while (abs(secIndex - sensorsManipulated[0].getIndex()) > NUM_SPACES_FROM_CLOSEST_IR && abs(secIndex - sensorsManipulated[0].getIndex()) != NUM_IR - 1) ;
+  } while (abs(secIndex - sensorsManipulated[0].getIndex()) > NUM_SPACES_FROM_CLOSEST_IR && abs(secIndex - sensorsManipulated[0].getIndex()) != NUM_IR - 1);
 
   secClosestAng = sensorsManipulated[i].GetAngle();
   secClosestVal = sensorsManipulated[i].GetValue();
@@ -114,17 +118,7 @@ float IRArray::findBallAngle() {
 }
 
 
-void IRArray::display() {
-  for (int i = 0; i < NUM_IR; i++) {
-    Serial.print(sensors[i].GetValue());
-    Serial.print(" | ");
-  }
-  Serial.print("Angle: ");
-  Serial.println(ballAngle);
-}
-
-
-void IRArray::CalculateAngle() {
+void IRArray::CalculateSimpleAngle() {
   readVals();
   IRSensor sensorsManipulated[NUM_IR];
   for (int i = 0; i < NUM_IR; i++) {
@@ -132,7 +126,7 @@ void IRArray::CalculateAngle() {
   }
 
   shellSortKnuth(sensorsManipulated, NUM_IR, lessThen);
-  
+
   IRSensor closest = sensorsManipulated[0];
   IRSensor SecClosest = sensorsManipulated[1];
   float closestAng = closest.GetAngle();
@@ -145,9 +139,14 @@ void IRArray::CalculateAngle() {
     secClosestAng -= 360;
   //float angle = avgAngs(closestAng, secClosestAng);
   float angle = closestAng;
-  ballAngle = angle; 
+  ballAngle = angle;
 }
 
-float IRArray::getBallAngle() {
-  return ballAngle;
+void IRArray::display() {
+  for (int i = 0; i < NUM_IR; i++) {
+    Serial.print(sensors[i].GetValue());
+    Serial.print(" | ");
+  }
+  Serial.print("Angle: ");
+  Serial.println(ballAngle);
 }
