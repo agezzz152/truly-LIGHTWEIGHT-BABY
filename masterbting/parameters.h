@@ -28,5 +28,7 @@
 #define RESET_TIMER 5000
 
 
+#define OwnGoal 0
+#define EnemyGoal 1
 
 #endif

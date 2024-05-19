@@ -51,13 +51,13 @@ void displayVals() {
   Serial.print(LDRs.Angle());
   Serial.println(" |");
 
-  //when an ldr is activated, change the first and last led in the closest neopixel strip to it.
-  for (i = 0; i < NUM_LDR; i++) {
-    if (LDRs.getStatus_i(i)) {
-      strip.setPixelColor(i * 8, 100, 0, 50);
-      strip.setPixelColor(i * 8 + 7, 100, 0, 50);
-    }
-  }
+  // //when an ldr is activated, change the first and last led in the closest neopixel strip to it.
+  // for (i = 0; i < NUM_LDR; i++) {
+  //   if (LDRs.getStatus_i(i)) {
+  //     strip.setPixelColor(i * 8, 100, 0, 50);
+  //     strip.setPixelColor(i * 8 + 7, 100, 0, 50);
+  //   }
+  // }
 }
 
 // Fill the dots one after the other with a color

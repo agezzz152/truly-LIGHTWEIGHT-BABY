@@ -9,6 +9,9 @@
 #include "MovingAverage.h"
 #include "IRArray.h"
 
+#include "PixyCam.h"
+
+
 long int currentT;
 long int startT;
 
@@ -36,7 +39,7 @@ motors driver(pwm, in_1, in_2);
 
 double ang, liniarSped, spinSped;
 
-
+PixyCam pixy;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
@@ -66,6 +69,9 @@ void loop() {
   liniarSped = 125;
   spinSped = 0;
 
+  
+  //if you want robot to chase ball: 
+  /*
   ang = IRs.findBallAngle();
   // IRs.display();
   driver.moov(ang, liniarSped, spinSped);
@@ -75,6 +81,7 @@ void loop() {
   if (currentT > startT + RESET_TIMER) {
     digitalWrite(resetPin, LOW);
   }
+  */
 
 
   // spinSped = liniarSped / (180 * 180) * ang * (360 - ang);
@@ -89,9 +96,41 @@ void loop() {
   //  spinSped = 0;
 
 
-  // driver.moov(ang, liniarSped, spinSped);
+  //if you want robot to move strait and avoid white lines:
+  /*
+   driver.moov(ang, liniarSped, spinSped);
+
+  
+  colorWipe(strip.Color(100, 100, 100), 50);
+  // if not during the proccess of retreating from a white line
+  if (!LDRs.getIsRetreating()) {
+    finds out which ldrs are active
+    calc the angle of the ldrs detected and store in global variable
+   LDRs.CalcLineAngle();
+   driver.moov(ang, liniarSped, spinSped);
+  }
+
+  //function for checking if we are in the middle of a retreat
+  LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped);
+
+  //displayVals();
+  */
+
+  
+  //if you want the robot to moov back and forth only if you can see the enemy goal
+//   /*
+  pixy.UpdateData();
+  driver.moov(0, 0, 40);
+  int goal = pixy.getGoal();
+    if (pixy.GetAngle(EnemyGoal) >= -10 && pixy.GetAngle(EnemyGoal <= 10) ) {
+      driver.moov(0, 100, 0);
+      myDelay(2000);
+      driver.moov(180, 50, 0);
+      myDelay(2000);
+    }
   strip.show();
 }
+*/
 
 
 
