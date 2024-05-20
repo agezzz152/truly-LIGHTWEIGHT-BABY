@@ -19,40 +19,40 @@ int resetPin = 7;
 
 
 //IR lmao
-int IRPins[] = { A8, A9, A10, A11, A12, A13, A14, A15 };
-IRArray IRs(IRPins);
+int IRPins[] = { A8, A9, A10, A11, A12, A13, A14, A15 }; // the array of the pins of the IR sensors
+IRArray IRs(IRPins); // Setting up the IR sensor and array.
 
 
 //LDRS lmao
-int const LDR[] = { 15, 2, 4, 13, 12, 14 };         //from the rightest LDR clockwise, with esp
+//int const LDR[] = { 15, 2, 4, 13, 12, 14 };         //from the rightest LDR clockwise, with esp
 int LdrPins[NUM_LDR] = { A2, A3, A4, A5, A6, A7 };  //from the rightest LDR clockwise, with arduino connections
-ldrArray LDRs(LdrPins);
-bool isRetreating = 0;
-double lAng = 0;
+ldrArray LDRs(LdrPins); // Setting up LDR pins and array
+bool isRetreating = 0; //if TRUE, we execute Retreat, to avoid white line
+double lAng = 0; // The angle of the detected White line
 
 //motors lmao
 int pwm[] = { 9, 12, 11, 10 };  //right up and clockwise
 int in_1[] = { 30, 37, 35, 32 };
 int in_2[] = { 31, 36, 34, 33 };
-motors driver(pwm, in_1, in_2);
+motors driver(pwm, in_1, in_2); // Initiate the motors with thier pins.
 
 
-double ang, liniarSped, spinSped;
+double ang, liniarSped, spinSped; // Variable for the moov function that controls the robot's movement.
 
-PixyCam pixy;
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800);
+PixyCam pixy; // initiate pixy
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, NEO_PIN, NEO_GRB + NEO_KHZ800); // initiate the neopixel
 
 void setup() {
   // Serial.begin(9600);
-  digitalWrite(resetPin, HIGH);
+  digitalWrite(resetPin, HIGH); // This pin is connected to the reset button so it must be on. If it's off, the Arduino will be stuck in a reset loop.
 
 
   //motors:
-  driver.motorSetup();
+  driver.motorSetup(); // Sets up the motors, determines the pinMode and values.
 
-  startT = millis();
+  startT = millis(); // saves the time in milliseconds
   //neoPixel:
-  strip.begin();
+  strip.begin(); // Starts the neopixels.
   strip.show();  // onWhiteLinee all pixels to 'off'
   strip.setBrightness(0);
 
@@ -63,23 +63,23 @@ void setup() {
 
 
 void loop() {
-  currentT = millis();
-  colorWipe(strip.Color(0, 0, 0), 50);
-  ang = 0;
-  liniarSped = 125;
-  spinSped = 0;
+  currentT = millis(); // saves the time loop() started in milliseconds
+  colorWipe(strip.Color(0, 0, 0), 50); // sets the neopixels color to none.
+  ang = 0; // direction of the robot is straight 
+  liniarSped = 125; // the speed of the robot is half of it's full capabilities, but we don't want him to drive so fast for several reasons.
+  spinSped = 0; // the robot does not spin while he drives.
 
   
   //if you want robot to chase ball: 
   /*
-  ang = IRs.findBallAngle();
-  // IRs.display();
-  driver.moov(ang, liniarSped, spinSped);
+  ang = IRs.findBallAngle(); // sets the angle that the robot goes in, as the direction of the ball, according to the IR sensors.
+  // IRs.display(); // shows the IR values and angle.
+  driver.moov(ang, liniarSped, spinSped); // Moving the robot with wanted speed and spin, and the angle of the robot.
 
-  myDelay(20);
+  myDelay(20); // delay of 20 milliseconds
 
-  if (currentT > startT + RESET_TIMER) {
-    digitalWrite(resetPin, LOW);
+  if (currentT > startT + RESET_TIMER) { // If the time the loop has started is grater than the start time by the selected time for a reset
+    digitalWrite(resetPin, LOW); // Reset the arduino.
   }
   */
 
@@ -98,29 +98,33 @@ void loop() {
 
   //if you want robot to move strait and avoid white lines:
   /*
-   driver.moov(ang, liniarSped, spinSped);
+   driver.moov(ang, liniarSped, spinSped); // the robot drives according to the insructions we set up in the start of the loop
 
   
-  colorWipe(strip.Color(100, 100, 100), 50);
-  // if not during the proccess of retreating from a white line
-  if (!LDRs.getIsRetreating()) {
+  colorWipe(strip.Color(100, 100, 100), 50); // sets the neopixels to white.
+  
+  if (!LDRs.getIsRetreating()) { // if not during the proccess of retreating from a white line
     finds out which ldrs are active
     calc the angle of the ldrs detected and store in global variable
-   LDRs.CalcLineAngle();
-   driver.moov(ang, liniarSped, spinSped);
+   LDRs.CalcLineAngle(); //checks the values of the LDRs. If 1 or more sensors detect a white line, then the isRetreating value is 1.
+   driver.moov(ang, liniarSped, spinSped); // Continue to drive
   }
 
   //function for checking if we are in the middle of a retreat
-  LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped);
+  LDRs.handleRetreat(driver, ang + 180, liniarSped * 2, spinSped); // If the robot is in a retreating state, it moves the robot in the opposite angle of the white line, and the robot drives x2 the speed.
 
-  //displayVals();
+  //displayVals(); // displays the value of the LDR sensors, the sensors that detected a white line, and the angle
   */
 
   
   //if you want the robot to moov back and forth only if you can see the enemy goal
-//   /*
-  pixy.UpdateData();
-  driver.moov(0, 0, 40);
+   /*
+
+
+
+ // This function is trash and doesn't even work. There is no need to spend time commenting on this code. Better to work on more essential things first.
+  pixy.UpdateData(); // gets data from the camera
+  driver.moov(0, 0, 40); // the robot spins.
   int goal = pixy.getGoal();
     if (pixy.GetAngle(EnemyGoal) >= -10 && pixy.GetAngle(EnemyGoal <= 10) ) {
       driver.moov(0, 100, 0);
@@ -129,8 +133,9 @@ void loop() {
       myDelay(2000);
     }
   strip.show();
+  */
 }
-*/
+
 
 
 
@@ -138,25 +143,25 @@ void loop() {
 
 void displayVals() {
   int i;
-  for (i = 0; i < NUM_LDR; i++) {
+  for (i = 0; i < NUM_LDR; i++) { // Prints the value of each LDR
     Serial.print(LDRs.getVal_i(i));
     Serial.print(" - ");
   }
   Serial.print("| ");
-  for (i = 0; i < NUM_LDR; i++) {
+  for (i = 0; i < NUM_LDR; i++) { // If an LDR detects a white line, it will add his index to the list of detected LDRs
     if (LDRs.getStatus_i(i)) {
       Serial.print(i);
       Serial.print(", ");
     }
   }
   Serial.print(", ");
-  Serial.print(LDRs.Angle());
+  Serial.print(LDRs.Angle()); // Prints the angle of the white line, if there is.
   Serial.println(" |");
 
   //when an ldr is activated, change the first and last led in the closest neopixel strip to it.
   for (i = 0; i < NUM_LDR; i++) {
     if (LDRs.getStatus_i(i)) {
-      strip.setPixelColor(i * 8, 100, 0, 50);
+      strip.setPixelColor(i * 8, 100, 0, 50); // if an LDR detects a while line, the first and last LED of his neo pixel will change the color to purple. That way we have a visual indication of the detection of the LDR.
       strip.setPixelColor(i * 8 + 7, 100, 0, 50);
     }
   }
@@ -165,8 +170,8 @@ void displayVals() {
 
 
 // Fill the dots one after the other with a color
-void colorWipe(uint32_t color, int wait) {
+void colorWipe(uint32_t color, int wait) { // sets the color of the NEOPIXEL strip.
   for (int i = 0; i < strip.numPixels(); i++) {
-    strip.setPixelColor(i, color);
+    strip.setPixelColor(i, color); 
   }
 }

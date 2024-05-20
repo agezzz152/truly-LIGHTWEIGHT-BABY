@@ -4,12 +4,12 @@
 
 
 PixyCam::PixyCam() {
-  pixy.init();
+  pixy.init(); // Starts up the camera.
 }
 
 void PixyCam::UpdateData() {
 
-  BlockHeight[0] = -1000;
+  BlockHeight[0] = -1000; //resets the variables of every goal so that we would get -1000 if no block is detected.
   BlockHeight[1] = -1000;
   Distance[0] = -1000;
   Distance[1] = -1000;
@@ -18,70 +18,48 @@ void PixyCam::UpdateData() {
 
   
   int i;
-  pixy.ccc.getBlocks();
-  int numBks = pixy.ccc.numBlocks;
-  if (numBks) {
-    //Serial.print("Detected ");
-    //Serial.println(pixy.ccc.numBlocks);
+  pixy.ccc.getBlocks(); // A pixy function that updates the blocks that are detected by the pixy.
+  int numBks = pixy.ccc.numBlocks; // Save the number of blocks the were detected.
+  if (numBks) { // If there are detected blocks
     for (i = 0; i<numBks; i++) {
-    // Serial.print(" block ");
-    // Serial.print(i);
-    // Serial.print(": ");
-    // pixy.ccc.blocks[i].print();
-
-    int n = pixy.ccc.blocks[i].m_signature - 1;
-    detectedGoal = n;
-    BlockHeight[n] = pixy.ccc.blocks[i].m_height;
-    Distance[n] = CalculateDistance(BlockHeight[n]);
-    BlockXPos[n] = pixy.ccc.blocks[i].m_x;
-    Angle[n] = CalculateAngle(Distance[n], BlockXPos[n], n);
-
-  //   if (pixy.ccc.blocks[i].m_signature == 1) {
-  //     detectedGoal = 0;
-  //     BlockHeight[0] = pixy.ccc.blocks[i].m_height;
-  //     Distance[0] = CalculateDistance(BlockHeight[0]);
-  //     BlockXPos[0] = pixy.ccc.blocks[i].m_x;
-  //     Angle[0] = CalculateAngle(Distance[0], BlockXPos[0]);
-  //   }
-
-  //   else if (pixy.ccc.blocks[i].m_signature == 2) {
-  //     detectedGoal = 1;
-  //     BlockHeight[1] = pixy.ccc.blocks[i].m_height;
-  //     Distance[1] = CalculateDistance(BlockHeight[1]);
-  //     BlockXPos[1] = pixy.ccc.blocks[i].m_x;
-  //     Angle[1] = CalculateAngle(Distance[1], BlockXPos[1]);
+    int n = pixy.ccc.blocks[i].m_signature - 1; // Gets the signature num of the detected block, and converts it to an index (the first signature is 1 so we want it to be 0)
+    detectedGoal = n; // updates the detected goal as the index of the signature.
+    BlockHeight[n] = pixy.ccc.blocks[i].m_height; // Updates the height of the block in it's correct index
+    Distance[n] = CalculateDistance(BlockHeight[n]); // Calculates and Updates the distance of the block in it's correct index
+    BlockXPos[n] = pixy.ccc.blocks[i].m_x; // Updates the Xpos of the block in it's correct index
+    Angle[n] = CalculateAngle(Distance[n], BlockXPos[n], n); // Calculates and Updates the angle of the block in it's correct index
       }
    }
 }
 
-float PixyCam::CalculateDistance(float height) {
+float PixyCam::CalculateDistance(float height) { // gets a height value
   float dist;
   float a = height;
-  dist = 5589.7 * pow(a, -1.168); // ==> 1856.6 * pow(a, -0.88) old nums
-  return dist;
+  dist = 5589.7 * pow(a, -1.168); // This function was created after measurring each distance and it's corresponding height.
+  return dist; // Returns the distance
 }
 
-float PixyCam::CalculateAngle(float distance, float x, int n) {
-  float delta = Center - x;
+float PixyCam::CalculateAngle(float distance, float x, int n) { // gets a distance value, an Xpos value, and the index of the goal.
+  float delta = Center - x; // calculates the differance between an Xpos of the block and the center of the camera
   if (delta < 0) {
-    right[n] = true;
-    abs(delta);
+    right[n] = true; // If the delta is negative then it means that the goal is on the right of the robot
+    delta = abs(delta); // Gets the absolute value of the delta
   }
   else {
-    right[n] = false;
+    right[n] = false; // Else, the goal is on the left of the robot.
   }
-  float ang = asin(delta / (distance * 5)) * 90;
-  return ang;
+  float ang = asin(delta / (distance * 5)) * 90; // Uses a right triangle trigo. calculting the angle between the base of the triangle and the hypotenuse. The random numbers are there to help convert between the distance and delta, because they are in diferent mesurement units.
+  return ang; // Returns the angle
 }
 
 float PixyCam::GetDistance(int index) {
-  return Distance[index];
+  return Distance[index]; // Returns the distance of the goal with the given index.
 }
 
 float PixyCam::GetAngle(int index) {
-  return Angle[index];
+  return Angle[index]; // Returns the angle of the goal with the given index.
 }
 
 int PixyCam::getGoal() {
-  return detectedGoal;
+  return detectedGoal; // Returns the index of the detected goal
 }
