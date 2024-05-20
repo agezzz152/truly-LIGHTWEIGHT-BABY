@@ -2,7 +2,7 @@
 
 
 // void Strategy::Strategy() {
-  
+
 // }
 
 // void Strategy::Attack() {
@@ -14,7 +14,7 @@
 //   float a = findGoalAngle();// need to do
 //   float delta = a - x;
 //   if (delat >= - 30 || delta <= 30) {
-    
+
 //   }
 // }
 

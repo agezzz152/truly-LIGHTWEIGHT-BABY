@@ -2,15 +2,15 @@
 #define __STRATEGY__
 #include "motors.h"
 
-#define OurGoal 0 //0 Is Blue. 1 Is yellow
+#define OurGoal 0  //0 Is Blue. 1 Is yellow
 #define EnemyGoal 1
 
 
 
 class Strategy {
-private: 
+private:
   motors driver;
-public:   
+public:
   void Strategy();
   void Retreat();
   void Attack();
